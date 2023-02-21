@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import './App.css'
 
-function App() {
-  const [file, setFile] = useState<any>();
+function App (): JSX.Element {
+  const [file, setFile] = useState<any>()
 
   const handleFileChange = (data: any) => {
-    setFile(data.target.files[0]);
+    setFile(data.target.files[0])
   }
 
   const onSubmit = async (_: any) => {
-    const formData = new FormData();
-    formData.append('file', file);
+    const formData = new FormData()
+    formData.append('file', file)
 
     const res: any = await fetch('http://127.0.0.1:8080/upload', {
       method: 'POST',
-      body: formData,
-    }).then(async (res) => await res.json());
-    console.log(res);
+      body: formData
+    }).then(async (res) => await res.json())
+    console.log(res)
   }
 
   return (
@@ -30,7 +29,7 @@ function App() {
         </form>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
