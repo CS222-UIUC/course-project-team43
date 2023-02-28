@@ -1,45 +1,23 @@
 package main
 
 import (
+	"QuickShare/service"
+
 	"net/http"
-	"path/filepath"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-func uploadFile(c *gin.Context) { 
-	file, err := c.FormFile("file")
+// This function gets run on the program startup, before main
+// and is used to initiliaze resources.
+func init() {
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "No file was received",
-		})
-		return
-	}
-
-	extension := filepath.Ext(file.Filename)
-	newFileName := uuid.New().String() + extension
-
-	// Save the file
-	if err := c.SaveUploadedFile(file, "tmp/" + newFileName); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Unable to save the file",
-		})
-		return
-	}
-
-	// File saved succesfully
-	c.JSON(http.StatusOK, gin.H{
-		"message": "File has been uploaded succesfully",
-	})
 }
 
 func main() {
-	r := gin.Default()
+	gin.SetMode()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
-	})
-	r.POST("/upload", uploadFile)
-	r.Run()
+
+	log.Printf("[info] starting http server")
+
+
 }
