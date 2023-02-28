@@ -1,5 +1,5 @@
 // Package v1 contains the V1 HTTP endpoints for our application
-package V1
+package v1
 
 import (
 	"net/http"
@@ -9,7 +9,8 @@ import (
 )
 
 func DownloadFile(c *gin.Context, String fileName) {
-	file, err := c.fromFile(c.Keys.Get(fileName))
+	// file, err := c.fromFile(c.Keys.Get(fileName))
+	file, err := c.fromFile("file")
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -23,7 +24,7 @@ func DownloadFile(c *gin.Context, String fileName) {
 	// https://stackoverflow.com/questions/22108519/how-do-i-read-a-streaming-response-body-using-golangs-net-http-package
 	// All about reading from body stream on client side...
 
-	if err := c.File(file); err != nil {
+	if err := c.File("file"); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
 		})
@@ -31,6 +32,6 @@ func DownloadFile(c *gin.Context, String fileName) {
 	}
 
 	c.JSON(StatusOK, gin.H {
-		"message": "File has been successfully written to body stream"
+		"message": "File has been successfully written to body stream",
 	})
 }
