@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func UploadFile(c *gin.Context) { 
+func UploadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 
 	if err != nil {
@@ -23,7 +23,7 @@ func UploadFile(c *gin.Context) {
 	newFileName := uuid.New().String() + extension
 
 	// Save the file
-	if err := c.SaveUploadedFile(file, "tmp/" + newFileName); err != nil {
+	if err := c.SaveUploadedFile(file, "tmp/"+newFileName); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
 		})

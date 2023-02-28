@@ -9,9 +9,9 @@ import (
 )
 
 type Server struct {
-	RunMode string
-	HttpPort int
-	ReadTimeout time.Duration
+	RunMode      string
+	HttpPort     int
+	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
 

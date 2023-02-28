@@ -22,4 +22,3 @@ func InitRouter() *gin.Engine {
 
 	return r
 }
-	

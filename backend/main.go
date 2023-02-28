@@ -1,14 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 
-	"QuickShare/routers"
 	"QuickShare/pkg/setting"
+	"QuickShare/routers"
 )
 
 // This function gets run on the program startup, before main
@@ -26,13 +26,13 @@ func main() {
 	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
 
 	server := &http.Server{
-		Addr:	endPoint,
-		Handler: routersInit,
-		ReadTimeout: readTimeout,
+		Addr:         endPoint,
+		Handler:      routersInit,
+		ReadTimeout:  readTimeout,
 		WriteTimeout: writeTimeout,
 	}
 
 	log.Printf("[info] starting http server")
 
-	server.ListenAndServe()
+	log.Fatal(server.ListenAndServe())
 }
