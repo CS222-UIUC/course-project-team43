@@ -14,4 +14,7 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.POST("/upload", v1.UploadFile)
+
+	return r
 }
+	
