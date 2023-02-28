@@ -1,13 +1,15 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-func uploadFile(c *gin.Context) { 
+func uploadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 
 	if err != nil {
@@ -21,7 +23,7 @@ func uploadFile(c *gin.Context) {
 	newFileName := uuid.New().String() + extension
 
 	// Save the file
-	if err := c.SaveUploadedFile(file, "tmp/" + newFileName); err != nil {
+	if err := c.SaveUploadedFile(file, "tmp/"+newFileName); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
 		})
@@ -41,5 +43,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
 	})
 	r.POST("/upload", uploadFile)
-	r.Run()
+
+	err := r.Run()
+	log.Printf("Server ended with: %v", err)
 }
