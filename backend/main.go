@@ -1,49 +1,38 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+
+	"QuickShare/pkg/setting"
+	"QuickShare/routers"
 )
 
-func uploadFile(c *gin.Context) {
-	file, err := c.FormFile("file")
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "No file was received",
-		})
-		return
-	}
-
-	extension := filepath.Ext(file.Filename)
-	newFileName := uuid.New().String() + extension
-
-	// Save the file
-	if err := c.SaveUploadedFile(file, "tmp/"+newFileName); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Unable to save the file",
-		})
-		return
-	}
-
-	// File saved succesfully
-	c.JSON(http.StatusOK, gin.H{
-		"message": "File has been uploaded succesfully",
-	})
+// This function gets run on the program startup, before main
+// and is used to initiliaze resources.
+func init() {
+	setting.Setup()
 }
 
 func main() {
-	r := gin.Default()
+	gin.SetMode(setting.ServerSetting.RunMode)
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
-	})
-	r.POST("/upload", uploadFile)
+	routersInit := routers.InitRouter()
+	readTimeout := setting.ServerSetting.ReadTimeout
+	writeTimeout := setting.ServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
 
-	err := r.Run()
-	log.Printf("Server ended with: %v", err)
+	server := &http.Server{
+		Addr:         endPoint,
+		Handler:      routersInit,
+		ReadTimeout:  readTimeout,
+		WriteTimeout: writeTimeout,
+	}
+
+	log.Printf("[info] starting http server")
+
+	log.Fatal(server.ListenAndServe())
 }
