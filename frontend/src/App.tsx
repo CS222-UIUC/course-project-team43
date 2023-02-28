@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
 import './App.css'
 
-function App (): JSX.Element {
+function App(): JSX.Element {
   const [file, setFile] = useState<any>()
 
-  const handleFileChange = (data: any) => {
+  const handleFileChange = (data: any): void => {
     setFile(data.target.files[0])
   }
 
-  const onSubmit = async (_: any) => {
+  const onSubmit = async (_: any): Promise<void> => {
     const formData = new FormData()
     formData.append('file', file)
 
     const res: any = await fetch('http://127.0.0.1:8080/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
     }).then(async (res) => await res.json())
     console.log(res)
   }
