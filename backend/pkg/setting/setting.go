@@ -1,5 +1,5 @@
 // Package settings provides the configuration options for our application
-package settings
+package setting
 
 import (
 	"log"
@@ -17,10 +17,13 @@ type Server struct {
 
 var ServerSetting = &Server{}
 
+var cfg *ini.File
+
 // Setup initialize's the configuration
 func Setup() {
+	var err error
 	cfg, err = ini.Load("conf/app.ini")
-	if err := nil {
+	if err != nil {
 		log.Fatalf("setting.Setup, failed to read conf from 'conf/app.ini': %v", err)
 	}
 

@@ -2,9 +2,11 @@
 package routers
 
 import (
-	"QuickShare/routers/v1"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"QuickShare/routers/v1"
 )
 
 func InitRouter() *gin.Engine {
@@ -14,6 +16,9 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.POST("/upload", v1.UploadFile)
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
+	})
 
 	return r
 }
