@@ -2,12 +2,9 @@
 package routers
 
 import (
-	"net/http"
-	"path/filepath"
+	"QuickShare/routers/v1"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/google/uuid"
 )
 
 func InitRouter() *gin.Engine {
@@ -16,5 +13,5 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.POST("")
+	r.POST("/upload", v1.UploadFile)
 }
