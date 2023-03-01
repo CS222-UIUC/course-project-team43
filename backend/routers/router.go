@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"QuickShare/routers/v1"
+	"QuickShare/services"
 )
 
 func InitRouter() *gin.Engine {
@@ -14,6 +15,7 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(services.AddToGinContext)
 
 	r.POST("/upload", v1.UploadFile)
 	r.GET("/health", func(c *gin.Context) {

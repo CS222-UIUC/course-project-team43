@@ -7,6 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"QuickShare/services"
 )
 
 func UploadFile(c *gin.Context) {
@@ -18,9 +20,16 @@ func UploadFile(c *gin.Context) {
 		})
 		return
 	}
-
+	
 	extension := filepath.Ext(file.Filename)
 	newFileName := uuid.New().String() + extension
+
+	
+	// Simulating saving file to store
+	// TODO: Move logic for downloading file
+	// into 'DownloadAndStore'
+	store := c.MustGet("store").(*services.Store)
+	store.DownloadAndStore(newFileName)
 
 	// Save the file
 	if err := c.SaveUploadedFile(file, "tmp/"+newFileName); err != nil {

@@ -12,7 +12,7 @@ function App(): JSX.Element {
     const formData = new FormData()
     formData.append('file', file)
 
-    const res: any = await fetch('http://127.0.0.1:8080/upload', {
+    const res: any = await fetch('http://127.0.0.1:8000/upload', {
       method: 'POST',
       body: formData,
     }).then(async (res) => await res.json())
