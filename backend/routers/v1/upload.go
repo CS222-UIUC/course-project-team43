@@ -20,11 +20,10 @@ func UploadFile(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	extension := filepath.Ext(file.Filename)
 	newFileName := uuid.New().String() + extension
 
-	
 	// Simulating saving file to store
 	// TODO: Move logic for downloading file
 	// into 'DownloadAndStore'

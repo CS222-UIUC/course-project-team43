@@ -6,21 +6,21 @@
 package services
 
 import (
+	"log"
 	"strings"
 	"sync"
 	"time"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Store struct {
-	mu sync.Mutex
+	mu    sync.Mutex
 	links []string
 }
 
 func (s *Store) DownloadAndStore(link string) {
-	// Simulating downloading 
+	// Simulating downloading
 	time.Sleep(8 * time.Second)
 
 	// Aquire the mutex to avoid a race condition
