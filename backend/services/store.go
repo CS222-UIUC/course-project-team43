@@ -36,6 +36,12 @@ func (s *Store) PrintDocuments() {
 
 func (s *Store) RemoveFile(link string) {
 	// TODO: Implement the abililty to remove a file from the FS
+	// This function should be run by our server every 1 minute.
+	// It will check if any of the documents have "expired" 
+	// (their UploadTime + LifeTime is greater than Time.now()) 
+	// and remove them from the save directory as well as from the 
+	// global store. Note, you must acquire the mutex when you 
+	// remove the file from the global store.
 }
 
 // Global Store
