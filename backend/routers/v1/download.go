@@ -13,7 +13,7 @@ import (
 	"QuickShare/services"
 )
 
-func UploadFile(c *gin.Context) {
+func DownloadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 
 	if err != nil {
