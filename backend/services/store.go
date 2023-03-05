@@ -1,37 +1,41 @@
-// Stores information about the state of the server
-// 1) What files are currently active
-// 2) The active download endpoints
-// 3) Downloads in progress
-
 package services
 
 import (
 	"log"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"QuickShare/models"
 )
 
+// Store tracks information about the files that are currently
+// downloaded onto the server. 
 type Store struct {
 	mu    sync.Mutex
-	links []string
+	documents []models.Document
 }
 
-func (s *Store) DownloadAndStore(link string) {
-	// Simulating downloading
-	time.Sleep(8 * time.Second)
-
+func (s *Store) AddToStore(doc models.Document) {
 	// Aquire the mutex to avoid a race condition
 	// when adding into 'links'
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	// Add link to the global links
-	log.Printf("Saving " + link)
-	s.links = append(s.links, link)
-	log.Printf("Currently in Store: " + strings.Join(s.links, " "))
+	s.documents = append(s.documents, doc)
+	s.PrintDocuments()
+}
+
+func (s *Store) PrintDocuments() {
+	log.Printf("Currently in Store: ")
+	for _, doc := range s.documents {
+		log.Printf("%v", doc)
+	}
+}
+
+func (s *Store) RemoveFile(link string) {
+	// TODO: Implement the abililty to remove a file from the FS
 }
 
 // Global Store
