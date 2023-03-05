@@ -10,9 +10,9 @@ import (
 )
 
 // Store tracks information about the files that are currently
-// downloaded onto the server. 
+// downloaded onto the server.
 type Store struct {
-	mu    sync.Mutex
+	mu        sync.Mutex
 	documents []models.Document
 }
 

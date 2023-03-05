@@ -2,15 +2,15 @@
 package v1
 
 import (
-	"path/filepath"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"QuickShare/services"
 	"QuickShare/models"
+	"QuickShare/services"
 )
 
 func UploadFile(c *gin.Context) {
@@ -28,16 +28,16 @@ func UploadFile(c *gin.Context) {
 
 	// Simulating saving file to store
 	// TODO: Move logic for downloading file
-	// into another method.  
+	// into another method.
 	store := c.MustGet("store").(*services.Store)
-	// TODO: Using 10 minutes as default duration. This should be a value we 
+	// TODO: Using 10 minutes as default duration. This should be a value we
 	// receive in the frontend and access through the gin.Context.
-	doc := models.NewDocument(newFileName, time.Duration(10) * time.Minute)
+	doc := models.NewDocument(newFileName, time.Duration(10)*time.Minute)
 	store.AddToStore(doc)
 
 	// Save the file
 	// TODO: Choose another location for saving the file
-	// other than "tmp/". This works on UNIX systems. 
+	// other than "tmp/". This works on UNIX systems.
 	// but some of us might be running on Windows
 	if err := c.SaveUploadedFile(file, "tmp/"+newFileName); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
