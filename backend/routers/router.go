@@ -17,7 +17,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(services.AddToGinContext)
 
-	r.POST("/upload", v1.UploadFile)
+	r.POST("/upload", v1.DownloadFile)
+	r.POST("/serve", v1.ServeFile)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
 	})
