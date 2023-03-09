@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"QuickShare/routers/v1"
+	v1 "QuickShare/routers/v1"
 	"QuickShare/services"
 )
 
