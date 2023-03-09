@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import * as API from './api/API'
 import './App.css'
 
 function App(): JSX.Element {
@@ -8,15 +9,16 @@ function App(): JSX.Element {
     setFile(data.target.files[0])
   }
 
-  const onSubmit = async (_: any): Promise<void> => {
+  const onSubmit = async (event: any): Promise<void> => {
+    event.preventDefault()
     const formData = new FormData()
     formData.append('file', file)
-
-    const res: any = await fetch('http://127.0.0.1:8000/upload', {
-      method: 'POST',
-      body: formData,
-    }).then(async (res) => await res.json())
-    console.log(res)
+    try {
+      const res = API.actions.upload(formData)
+      console.log(res)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
