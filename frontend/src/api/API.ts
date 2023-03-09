@@ -4,6 +4,7 @@
 export const API_URL = 'http://127.0.0.1:8000';
 export const actions: APIActions = {
     upload: async (body: FormData) => {
+        console.log(body);
         return await post('upload', body);
     },
 };
@@ -16,9 +17,6 @@ export async function rawGet(path: string): Promise<Response> {
 export async function rawPost(path: string, body: any): Promise<Response> {
     const response = await fetch(`${API_URL}/${path}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
         body,
     });
     return response;

@@ -14,7 +14,7 @@ function App(): JSX.Element {
     const formData = new FormData()
     formData.append('file', file)
     try {
-      const res = API.actions.upload(formData)
+      const res = await API.actions.upload(formData)
       console.log(res)
     } catch (err) {
       console.error(err)
