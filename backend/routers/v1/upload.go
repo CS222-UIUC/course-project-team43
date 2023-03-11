@@ -3,15 +3,54 @@ package v1
 
 import(
 	"net/http"
+	"io/ioutil"
+	"encoding/json"
+
 	"github.com/gin-gonic/gin"
+
+	"QuickShare/services"
 )
 
-func UploadFile(c *gin.Context) {
-	c.FormValue("fileName")
-	// According to the wiki, this line should get a fileName from the front end
-	// that has been posted using FormData.
+type FileName struct {
+	FileName string `json:"FileName"`
+}
 
-	// services.
+func UploadFile(c *gin.Context) {
+	jsonFeed, err := ioutil.ReadAll(c.Request.Body)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message" : "Error parsing input from request",
+		})
+		return
+	}
+
+	FileName := FileName{}
+	json.Unmarshal([]byte(jsonFeed), &FileName)
+
+	store := c.MustGet("store").(*services.Store)
+
+	if store.IsDocPathInStore(FileName.FileName) {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request)     {
+			http.ServeFile(w, r, FileName.FileName)
+		})
+	
+		err := http.ListenAndServe(":8080", nil)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message" : "Unable to serve file",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message" : "File successfuly served",
+		})
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"message" : "File not found",
+	})
 }
 
 
