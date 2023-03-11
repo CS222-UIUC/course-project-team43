@@ -34,6 +34,15 @@ func (s *Store) PrintDocuments() {
 	}
 }
 
+func (s *Store) RetrievePathFromStore(fileName string) bool {
+	for _, doc := range s.documents {
+		if (doc.Path == fileName) {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Store) RemoveFile(link string) {
 	// TODO: Implement the abililty to remove a file from the FS
 	// This function should be run by our server every 1 minute.
