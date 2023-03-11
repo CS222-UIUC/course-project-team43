@@ -36,7 +36,7 @@ func (s *Store) PrintDocuments() {
 
 func (s *Store) IsDocPathInStore(fileName string) bool {
 	for _, doc := range s.documents {
-		if (doc.Path == fileName) {
+		if doc.Path == fileName {
 			return true
 		}
 	}
