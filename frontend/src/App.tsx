@@ -23,16 +23,18 @@ function App(): JSX.Element {
   }
 
   const onDownloadSubmit = async (_: any): Promise<void> => {
-    var formData
+    let formData : string = ""
     if (downloadRef.current != null) {
-      formData = JSON.stringify({"FileName" : downloadRef.current.value})
+      formData = JSON.stringify({"FileName": downloadRef.current.value})
     }
-
-    const res: any = await fetch('https://127.0.0.1:8080/download', {
-      method: 'GET',
-      body: formData,
-    }).then(async (res) => await res.json())
-    console.log(res)
+    
+    if (formData != "") {
+      const res: any = await fetch('https://127.0.0.1:8080/download', {
+        method: 'GET',
+        body: formData,
+      }).then(async (res) => await res.json())
+      console.log(res)
+    }
   }
 
   return (
