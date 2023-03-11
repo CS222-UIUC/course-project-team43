@@ -24,6 +24,7 @@ func newStore() *Store {
 	s := Store{
 		documents: make(map[string]models.Document),
 	}
+	// Begin background sweep goroutine
 	go s.sweepLoop()
 	return &s
 }
