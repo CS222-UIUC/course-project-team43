@@ -11,7 +11,7 @@ import (
 	"QuickShare/models"
 )
 
-const SweepInterval = 10 * time.Second
+const SweepInterval = time.Minute
 
 // Store tracks information about the files that are currently
 // downloaded onto the server.
