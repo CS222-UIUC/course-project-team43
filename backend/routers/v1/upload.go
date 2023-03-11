@@ -35,6 +35,7 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
+	// Fetch global store from store.go
 	store := c.MustGet("store").(*services.Store)
 
 	if store.IsDocPathInStore(FileName.FileName) {
