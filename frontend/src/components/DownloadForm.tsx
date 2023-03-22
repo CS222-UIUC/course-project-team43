@@ -15,11 +15,19 @@ const DownloadForm = (): JSX.Element => {
 	const onDownloadSubmit = async (_: any): Promise<void> => {
     if (filename !== "") {
 			try {
-				const res = await API.rawPost("serve", JSON.stringify({file_id: filename}))
-				await res.blob().then(blob => {
-					var file = window.URL.createObjectURL(blob)
-					window.location.assign(file)
-				})
+				await API.rawPost("serve", JSON.stringify({file_id: filename}))
+					.then(async (response: any) => response.blob())
+					.then(blob => {
+						// TODO: Cleanup this logic.
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = `${filename}.txt`;
+						document.body.appendChild(a);
+						a.click();
+						a.remove();
+						window.URL.revokeObjectURL(url);
+					})
 			} catch(err) {
 				console.log(err)
 			}
