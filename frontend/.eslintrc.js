@@ -13,5 +13,6 @@ module.exports = {
   plugins: ['react'],
   rules: {
     "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/restrict-template-expressions": "off"
   }
 }

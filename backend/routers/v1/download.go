@@ -13,6 +13,11 @@ import (
 	"QuickShare/services"
 )
 
+type DownloadResponse struct {
+	Expiration time.Time `json:"expiration"`
+	FileId     string    `json:"file_id"`
+}
+
 func DownloadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 
@@ -24,7 +29,8 @@ func DownloadFile(c *gin.Context) {
 	}
 
 	extension := filepath.Ext(file.Filename)
-	newFileName := uuid.New().String() + extension
+	fileId := uuid.New().String()
+	newFileName := fileId + extension
 
 	// Simulating saving file to store
 	// TODO: Move logic for downloading file
@@ -32,7 +38,7 @@ func DownloadFile(c *gin.Context) {
 	store := c.MustGet("store").(*services.Store)
 	// TODO: Using 10 minutes as default duration. This should be a value we
 	// receive in the frontend and access through the gin.Context.
-	doc := models.NewDocument(newFileName, 10*time.Minute)
+	doc := models.NewDocument(fileId, extension, 10*time.Minute)
 	store.AddToStore(doc)
 
 	// Save the file
@@ -47,7 +53,8 @@ func DownloadFile(c *gin.Context) {
 	}
 
 	// File saved succesfully
-	c.JSON(http.StatusOK, gin.H{
-		"message": "File has been uploaded succesfully",
+	c.JSON(http.StatusOK, DownloadResponse{
+		Expiration: doc.ExpirationTime,
+		FileId:     fileId,
 	})
 }
