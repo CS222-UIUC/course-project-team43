@@ -38,7 +38,7 @@ func DownloadFile(c *gin.Context) {
 	store := c.MustGet("store").(*services.Store)
 	// TODO: Using 10 minutes as default duration. This should be a value we
 	// receive in the frontend and access through the gin.Context.
-	doc := models.NewDocument(newFileName, 10*time.Minute)
+	doc := models.NewDocument(fileId, extension, 10*time.Minute)
 	store.AddToStore(doc)
 
 	// Save the file

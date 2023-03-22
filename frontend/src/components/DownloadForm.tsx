@@ -10,13 +10,16 @@ import {
 
 // Form for downloading files from the backend
 const DownloadForm = (): JSX.Element => {
-	const [filename, setFileName] = useState<string>()
+	const [filename, setFileName] = useState<string>("")
 
 	const onDownloadSubmit = async (_: any): Promise<void> => {
     if (filename !== "") {
 			try {
-				const res = await API.get<string>(`serve/${filename}`)
-				console.log(res)
+				const res = await API.rawPost("serve", JSON.stringify({file_id: filename}))
+				await res.blob().then(blob => {
+					var file = window.URL.createObjectURL(blob)
+					window.location.assign(file)
+				})
 			} catch(err) {
 				console.log(err)
 			}
@@ -34,7 +37,8 @@ const DownloadForm = (): JSX.Element => {
 				value={filename}
 				onChange={onFilenameChange}
 				variant="outlined"
-				sx={{ mr: 2 }}
+				fullWidth
+				sx={{ mb: 2 }}
 			/>
       <Button
         variant="contained"

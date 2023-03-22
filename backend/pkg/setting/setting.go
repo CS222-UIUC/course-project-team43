@@ -13,6 +13,7 @@ type Server struct {
 	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+	DownloadPath string
 }
 
 var ServerSetting = &Server{}

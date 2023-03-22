@@ -3,21 +3,29 @@ package models
 
 import (
 	"time"
+
+	"QuickShare/pkg/setting"
 )
 
 // Document stores information about a file that was downloaded by the
 // server.
 type Document struct {
-	Path           string        // The location of the file
+	FileId           string        // The location of the file
+	Extension				string 					// The extension of the file
 	ExpirationTime time.Time     // When the file should be deleted from the server
 }
 
 // NewDocument creates a document object given the path of the file that
 // has already been downloaded and the time this file should exist on the
 // server.
-func NewDocument(path string, lifetime time.Duration) Document {
+func NewDocument(fileId string, extension string, lifetime time.Duration) Document {
 	return Document{
-		Path:           path,
+		FileId: fileId,
+		Extension: extension,
 		ExpirationTime: time.Now().Add(lifetime),
 	}
+}
+
+func (d *Document) GetPath() string {
+	return setting.ServerSetting.DownloadPath + d.FileId + d.Extension
 }

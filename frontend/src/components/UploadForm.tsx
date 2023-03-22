@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import * as API from '../api/API'
+import type { UploadReponse } from '../api/Types'
 
 import { 
   Container,
@@ -12,7 +13,8 @@ import UploadFileIcon from "@mui/icons-material/UploadFile"
 // Form for uploading files to the backend
 const UploadForm = (): JSX.Element => {
   const [uploadFile, setUploadFile] = useState<any>()
-  const [filename, setFilename] = useState<string>()
+  const [fileId, setFileId] = useState<string>("")
+  const [filename, setFilename] = useState<string>("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -30,8 +32,9 @@ const UploadForm = (): JSX.Element => {
     const formData = new FormData()
     formData.append('file', uploadFile)
     try {
-      const res = await API.actions.upload(formData)
+      const res = await API.actions.upload<UploadReponse>(formData)
       console.log(res)
+      setFileId(res.response.file_id)
     } catch (err) {
       console.error(err)
     }
@@ -54,6 +57,9 @@ const UploadForm = (): JSX.Element => {
       >
         Share
       </Button>
+      { fileId !== "" && 
+        <Box>{fileId}</Box>
+      }
     </Container>
   )
 }

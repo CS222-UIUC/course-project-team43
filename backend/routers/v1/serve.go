@@ -5,18 +5,20 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"log"
 
 	"github.com/gin-gonic/gin"
 
 	"QuickShare/services"
 )
 
-type FileName struct {
-	FileName string `json:"FileName"`
+type FileRequest struct {
+	FileId string `json:"file_id"`
 }
 
 func ServeFile(c *gin.Context) {
 	jsonFeed, readErr := io.ReadAll(c.Request.Body)
+
 
 	if readErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -25,8 +27,8 @@ func ServeFile(c *gin.Context) {
 		return
 	}
 
-	FileName := FileName{}
-	marshalErr := json.Unmarshal([]byte(jsonFeed), &FileName)
+	FileRequest := FileRequest{}
+	marshalErr := json.Unmarshal([]byte(jsonFeed), &FileRequest)
 
 	if marshalErr != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -35,25 +37,15 @@ func ServeFile(c *gin.Context) {
 		return
 	}
 
-	// Fetch global store from store.go
+	// Obtain global store from gin.Context
 	store := c.MustGet("store").(*services.Store)
 
-	if store.IsDocPathInStore(FileName.FileName) {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, FileName.FileName)
-		})
-
-		err := http.ListenAndServe(":8080", nil)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "Unable to serve file",
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"message": "File successfuly served",
-		})
+	doc := store.GetDocFromStore(FileRequest.FileId) 
+	if doc != nil {
+		path := doc.GetPath()
+		log.Printf("Serving file: %v", path)
+		c.File(path)
+		return
 	}
 
 	c.JSON(http.StatusBadRequest, gin.H{

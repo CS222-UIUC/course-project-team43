@@ -59,7 +59,7 @@ func (s *Store) AddToStore(doc models.Document) {
 	defer s.mu.Unlock()
 
 	// Add link to the global links
-	s.documents[doc.Path] = doc
+	s.documents[doc.FileId] = doc
 	s.PrintDocuments()
 }
 
@@ -70,13 +70,13 @@ func (s *Store) PrintDocuments() {
 	}
 }
 
-func (s *Store) IsDocPathInStore(fileName string) bool {
+func (s *Store) GetDocFromStore(fileId string) *models.Document {
 	for _, doc := range s.documents {
-		if doc.Path == fileName {
-			return true
+		if doc.FileId == fileId {
+			return &doc
 		}
 	}
-	return false
+	return nil
 }
 
 func (s *Store) RemoveFile(path string) {
