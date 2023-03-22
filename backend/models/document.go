@@ -23,3 +23,7 @@ func NewDocument(path string, lifetime time.Duration) Document {
 		Lifetime:       lifetime,
 	}
 }
+
+func (d Document) GetExpiration() time.Time {
+	return d.UploadDatetime.Add(d.Lifetime)
+}
