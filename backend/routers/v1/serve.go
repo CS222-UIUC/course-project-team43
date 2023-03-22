@@ -4,8 +4,8 @@ package v1
 import (
 	"encoding/json"
 	"io"
-	"net/http"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 
@@ -18,7 +18,6 @@ type FileRequest struct {
 
 func ServeFile(c *gin.Context) {
 	jsonFeed, readErr := io.ReadAll(c.Request.Body)
-
 
 	if readErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -40,7 +39,7 @@ func ServeFile(c *gin.Context) {
 	// Obtain global store from gin.Context
 	store := c.MustGet("store").(*services.Store)
 
-	doc := store.GetDocFromStore(FileRequest.FileId) 
+	doc := store.GetDocFromStore(FileRequest.FileId)
 	if doc != nil {
 		path := doc.GetPath()
 		log.Printf("Serving file: %v", path)

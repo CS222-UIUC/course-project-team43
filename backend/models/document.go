@@ -10,9 +10,9 @@ import (
 // Document stores information about a file that was downloaded by the
 // server.
 type Document struct {
-	FileId           string        // The location of the file
-	Extension				string 					// The extension of the file
-	ExpirationTime time.Time     // When the file should be deleted from the server
+	FileId         string    // The location of the file
+	Extension      string    // The extension of the file
+	ExpirationTime time.Time // When the file should be deleted from the server
 }
 
 // NewDocument creates a document object given the path of the file that
@@ -20,8 +20,8 @@ type Document struct {
 // server.
 func NewDocument(fileId string, extension string, lifetime time.Duration) Document {
 	return Document{
-		FileId: fileId,
-		Extension: extension,
+		FileId:         fileId,
+		Extension:      extension,
 		ExpirationTime: time.Now().Add(lifetime),
 	}
 }

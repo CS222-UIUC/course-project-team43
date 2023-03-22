@@ -15,7 +15,7 @@ import (
 
 type DownloadResponse struct {
 	Expiration time.Time `json:"expiration"`
-	FileId   string    `json:"file_id"`
+	FileId     string    `json:"file_id"`
 }
 
 func DownloadFile(c *gin.Context) {
@@ -55,6 +55,6 @@ func DownloadFile(c *gin.Context) {
 	// File saved succesfully
 	c.JSON(http.StatusOK, DownloadResponse{
 		Expiration: doc.ExpirationTime,
-		FileId: fileId,
+		FileId:     fileId,
 	})
 }
