@@ -42,20 +42,19 @@ func (s *Store) sweep(currTime time.Time) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	log.Printf("Starting sweep")
+	var removedFiles []string
 
 	for path, doc := range s.documents {
-		if currTime.After(doc.GetExpiration()) {
+		if currTime.After(doc.ExpirationTime) {
 			s.removeFile(path)
+			removedFiles = append(removedFiles, path)
 		}
 	}
 
-	s.PrintDocuments()
+	log.Printf("Removed files: %v", removedFiles)
 }
 
 func (s *Store) AddToStore(doc models.Document) {
-	// Aquire the mutex to avoid a race condition
-	// when adding into 'links'
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

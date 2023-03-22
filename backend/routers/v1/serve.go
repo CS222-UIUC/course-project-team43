@@ -16,9 +16,9 @@ type FileName struct {
 }
 
 func ServeFile(c *gin.Context) {
-	jsonFeed, err1 := io.ReadAll(c.Request.Body)
+	jsonFeed, readErr := io.ReadAll(c.Request.Body)
 
-	if err1 != nil {
+	if readErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "Error parsing input from request",
 		})
@@ -26,9 +26,9 @@ func ServeFile(c *gin.Context) {
 	}
 
 	FileName := FileName{}
-	err2 := json.Unmarshal([]byte(jsonFeed), &FileName)
+	marshalErr := json.Unmarshal([]byte(jsonFeed), &FileName)
 
-	if err2 != nil {
+	if marshalErr != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Cannot parse JSON",
 		})

@@ -13,6 +13,11 @@ import (
 	"QuickShare/services"
 )
 
+type DownloadResponse struct {
+	Expiration time.Time `json:"expiration"`
+	FileId   string    `json:"file_id"`
+}
+
 func DownloadFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 
@@ -24,7 +29,8 @@ func DownloadFile(c *gin.Context) {
 	}
 
 	extension := filepath.Ext(file.Filename)
-	newFileName := uuid.New().String() + extension
+	fileId := uuid.New().String()
+	newFileName := fileId + extension
 
 	// Simulating saving file to store
 	// TODO: Move logic for downloading file
@@ -47,7 +53,8 @@ func DownloadFile(c *gin.Context) {
 	}
 
 	// File saved succesfully
-	c.JSON(http.StatusOK, gin.H{
-		"message": "File has been uploaded succesfully",
+	c.JSON(http.StatusOK, DownloadResponse{
+		Expiration: doc.ExpirationTime,
+		FileId: fileId,
 	})
 }

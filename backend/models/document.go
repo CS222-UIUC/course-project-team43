@@ -9,8 +9,7 @@ import (
 // server.
 type Document struct {
 	Path           string        // The location of the file
-	UploadDatetime time.Time     // When the file was downloaded onto the server
-	Lifetime       time.Duration // How long the file should exist on the server for
+	ExpirationTime time.Time     // When the file should be deleted from the server
 }
 
 // NewDocument creates a document object given the path of the file that
@@ -19,11 +18,6 @@ type Document struct {
 func NewDocument(path string, lifetime time.Duration) Document {
 	return Document{
 		Path:           path,
-		UploadDatetime: time.Now(),
-		Lifetime:       lifetime,
+		ExpirationTime: time.Now().Add(lifetime),
 	}
-}
-
-func (d Document) GetExpiration() time.Time {
-	return d.UploadDatetime.Add(d.Lifetime)
 }
