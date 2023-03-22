@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react'
 import * as API from './api/API'
-import './App.css'
 
 function App(): JSX.Element {
   const [file, setFile] = useState<any>()
@@ -38,9 +37,9 @@ function App(): JSX.Element {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        QuickShare
+    <div>
+      <header>QuickShare</header>
+      <div>
         <form onSubmit={onUploadSubmit}>
           <input name="file_upload" type="file" onChange={handleFileChange}></input>
           <input type="Submit"></input>
@@ -49,7 +48,7 @@ function App(): JSX.Element {
           <input name="file_download" type="text" ref={downloadRef}></input>
           <input type="Submit"></input>
         </form>
-      </header>
+      </div>
     </div>
   )
 }
