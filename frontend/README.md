@@ -1,46 +1,78 @@
-# Getting Started with Create React App
+# next-template
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Next.js 13 template for building apps with Radix UI and Tailwind CSS.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Radix UI Primitives
+- Tailwind CSS
+- Fonts with `@next/font`
+- Icons from [Lucide](https://lucide.dev)
+- Dark mode with `next-themes`
+- Automatic import sorting with `@ianvs/prettier-plugin-sort-imports`
 
-### `npm start`
+## Tailwind CSS Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Class merging with `taiwind-merge`
+- Animation with `tailwindcss-animate`
+- Conditional classes with `clsx`
+- Variants with `class-variance-authority`
+- Automatic class sorting with `eslint-plugin-tailwindcss`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Import Sort
 
-### `npm test`
+The starter comes with `@ianvs/prettier-plugin-sort-imports` for automatically sort your imports.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Input
 
-### `npm run build`
+```tsx
+import * as React from "react"
+import Link from "next/link"
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+import { siteConfig } from "@/config/site"
+import { buttonVariants } from "@/components/ui/button"
+import "@/styles/globals.css"
+import { twMerge } from "tailwind-merge"
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+import { NavItem } from "@/types/nav"
+import { cn } from "@/lib/utils"
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Output
 
-### `npm run eject`
+```tsx
+import * as React from "react"
+// React is always first.
+import Link from "next/link"
+// Followed by next modules.
+import { twMerge } from "tailwind-merge"
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+// Followed by third-party modules
+// Space
+import "@/styles/globals.css"
+// styles
+import { NavItem } from "@/types/nav"
+// types
+import { siteConfig } from "@/config/site"
+// config
+import { cn } from "@/lib/utils"
+// lib
+import { buttonVariants } from "@/components/ui/button"
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+// components
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Class Merging
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The `cn` util handles conditional classes and class merging.
 
-## Learn More
+### Input
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```ts
+cn("px-2 bg-slate-100 py-2 bg-slate-200")
+// Outputs `p-2 bg-slate-200`
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## License
+
+Licensed under the [MIT license](https://github.com/shadcn/ui/blob/main/LICENSE.md).
