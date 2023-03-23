@@ -17,12 +17,12 @@ const SweepInterval = time.Minute
 // downloaded onto the server.
 type Store struct {
 	mu        sync.Mutex
-	documents map[string]models.Document
+	documents map[string]*models.Document
 }
 
 func newStore() *Store {
 	s := Store{
-		documents: make(map[string]models.Document),
+		documents: make(map[string]*models.Document),
 	}
 	// Begin background sweep goroutine
 	go s.sweepLoop()
@@ -54,7 +54,7 @@ func (s *Store) sweep(currTime time.Time) {
 	log.Printf("Removed files: %v", removedFiles)
 }
 
-func (s *Store) AddToStore(doc models.Document) {
+func (s *Store) AddToStore(doc *models.Document) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -71,12 +71,7 @@ func (s *Store) PrintDocuments() {
 }
 
 func (s *Store) GetDocFromStore(fileId string) *models.Document {
-	for _, doc := range s.documents {
-		if doc.FileId == fileId {
-			return &doc
-		}
-	}
-	return nil
+	return s.documents[fileId]
 }
 
 func (s *Store) RemoveFile(path string) {
@@ -87,10 +82,12 @@ func (s *Store) RemoveFile(path string) {
 }
 
 // precondition: we have acquired the mutex lock
-func (s *Store) removeFile(path string) {
-	delete(s.documents, path)
-	// TODO: consolidate fs logic
-	os.Remove("/tmp/" + path)
+func (s *Store) removeFile(fileId string) {
+	doc := s.documents[fileId]
+	if doc != nil {
+		os.Remove(doc.GetPath())
+		delete(s.documents, fileId)
+	}
 }
 
 // Global Store

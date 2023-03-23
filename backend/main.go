@@ -14,7 +14,7 @@ import (
 // This function gets run on the program startup, before main
 // and is used to initiliaze resources.
 func init() {
-	setting.Setup()
+	setting.Setup("conf/app.ini")
 }
 
 func main() {
