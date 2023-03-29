@@ -2,19 +2,32 @@
 package routers
 
 import (
+	"encoding/json"
 	"net/http"
+	"io/ioutil"
+	"time"
 
+	"go.uber.org/zap"
+	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 
 	v1 "QuickShare/routers/v1"
 	"QuickShare/services"
+	"QuickShare/pkg/setting"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	zapConfFile, _ := ioutil.ReadFile(setting.ServerSetting.ZapConfPath)
+	var zapConf zap.Config
+	if err := json.Unmarshal(zapConfFile, &zapConf); err != nil {
+		panic(err)
+	}
+	logger := zap.Must(zapConf.Build()) // Build the logger
+
+	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	r.Use(ginzap.RecoveryWithZap(logger, true))
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())
 
