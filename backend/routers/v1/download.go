@@ -30,7 +30,6 @@ func DownloadFile(c *gin.Context) {
 
 	extension := filepath.Ext(file.Filename)
 	fileId := uuid.New().String()
-	newFileName := fileId + extension
 
 	// Simulating saving file to store
 	// TODO: Move logic for downloading file
@@ -45,7 +44,7 @@ func DownloadFile(c *gin.Context) {
 	// TODO: Choose another location for saving the file
 	// other than "tmp/". This works on UNIX systems.
 	// but some of us might be running on Windows
-	if err := c.SaveUploadedFile(file, "/tmp/"+newFileName); err != nil {
+	if err := c.SaveUploadedFile(file, doc.GetPath()); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
 		})

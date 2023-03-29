@@ -21,9 +21,9 @@ var ServerSetting = &Server{}
 var cfg *ini.File
 
 // Setup initialize's the configuration
-func Setup() {
+func Setup(configFilePath string) {
 	var err error
-	cfg, err = ini.Load("conf/app.ini")
+	cfg, err = ini.Load(configFilePath)
 	if err != nil {
 		log.Fatalf("setting.Setup, failed to read conf from 'conf/app.ini': %v", err)
 	}

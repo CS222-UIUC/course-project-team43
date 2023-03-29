@@ -2,6 +2,7 @@
 package models
 
 import (
+	"path/filepath"
 	"time"
 
 	"QuickShare/pkg/setting"
@@ -18,8 +19,8 @@ type Document struct {
 // NewDocument creates a document object given the path of the file that
 // has already been downloaded and the time this file should exist on the
 // server.
-func NewDocument(fileId string, extension string, lifetime time.Duration) Document {
-	return Document{
+func NewDocument(fileId string, extension string, lifetime time.Duration) *Document {
+	return &Document{
 		FileId:         fileId,
 		Extension:      extension,
 		ExpirationTime: time.Now().Add(lifetime),
@@ -27,5 +28,5 @@ func NewDocument(fileId string, extension string, lifetime time.Duration) Docume
 }
 
 func (d *Document) GetPath() string {
-	return setting.ServerSetting.DownloadPath + d.FileId + d.Extension
+	return filepath.Join(setting.ServerSetting.DownloadPath, d.FileId+d.Extension)
 }
