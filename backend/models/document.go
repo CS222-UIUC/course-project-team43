@@ -19,11 +19,11 @@ type Document struct {
 // NewDocument creates a document object given the path of the file that
 // has already been downloaded and the time this file should exist on the
 // server.
-func NewDocument(fileId string, extension string, lifetime time.Duration) *Document {
+func NewDocument(fileId string, extension string, expirationTime time.Time) *Document {
 	return &Document{
 		FileId:         fileId,
 		Extension:      extension,
-		ExpirationTime: time.Now().Add(lifetime),
+		ExpirationTime: expirationTime,
 	}
 }
 
