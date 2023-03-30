@@ -4,6 +4,9 @@ jobs:
   build:
     name: go test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/setup-go@v3
         with:
