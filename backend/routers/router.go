@@ -4,24 +4,35 @@ package routers
 import (
 	"encoding/json"
 	"net/http"
-	"io/ioutil"
+	"os"
 	"time"
 
-	"go.uber.org/zap"
 	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
+	"QuickShare/pkg/setting"
 	v1 "QuickShare/routers/v1"
 	"QuickShare/services"
-	"QuickShare/pkg/setting"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	zapConfFile, _ := ioutil.ReadFile(setting.ServerSetting.ZapConfPath)
+	zapConfFile, _ := os.Open(setting.ServerSetting.ZapConfPath)
+	defer zapConfFile.Close()
+	data := make([]byte, 0)
+	buffer := make([]byte, 1024)
+	for {
+		n, err := zapConfFile.Read(buffer)
+		if n == 0 || err != nil {
+			break
+		}
+		data = append(data, buffer[:n]...)
+	}
+
 	var zapConf zap.Config
-	if err := json.Unmarshal(zapConfFile, &zapConf); err != nil {
+	if err := json.Unmarshal(data, &zapConf); err != nil {
 		panic(err)
 	}
 	logger := zap.Must(zapConf.Build()) // Build the logger
