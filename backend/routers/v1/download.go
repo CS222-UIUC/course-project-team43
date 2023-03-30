@@ -2,58 +2,52 @@
 package v1
 
 import (
+	"encoding/json"
+	"io"
+	"log"
 	"net/http"
-	"path/filepath"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 
-	"QuickShare/models"
 	"QuickShare/services"
 )
 
-type DownloadResponse struct {
-	Expiration time.Time `json:"expiration"`
-	FileId     string    `json:"file_id"`
+type FileRequest struct {
+	FileId string `json:"file_id"`
 }
 
 func DownloadFile(c *gin.Context) {
-	file, err := c.FormFile("file")
+	jsonFeed, readErr := io.ReadAll(c.Request.Body)
 
-	if err != nil {
+	if readErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "No file was received",
+			"message": "Error parsing input from request",
 		})
 		return
 	}
 
-	extension := filepath.Ext(file.Filename)
-	fileId := uuid.New().String()
+	FileRequest := FileRequest{}
+	marshalErr := json.Unmarshal([]byte(jsonFeed), &FileRequest)
 
-	// Simulating saving file to store
-	// TODO: Move logic for downloading file
-	// into another method.
-	store := c.MustGet("store").(*services.Store)
-	// TODO: Using 10 minutes as default duration. This should be a value we
-	// receive in the frontend and access through the gin.Context.
-	doc := models.NewDocument(fileId, extension, 10*time.Minute)
-	store.AddToStore(doc)
-
-	// Save the file
-	// TODO: Choose another location for saving the file
-	// other than "tmp/". This works on UNIX systems.
-	// but some of us might be running on Windows
-	if err := c.SaveUploadedFile(file, doc.GetPath()); err != nil {
+	if marshalErr != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Unable to save the file",
+			"message": "Cannot parse JSON",
 		})
 		return
 	}
 
-	// File saved succesfully
-	c.JSON(http.StatusOK, DownloadResponse{
-		Expiration: doc.ExpirationTime,
-		FileId:     fileId,
+	// Obtain global store from gin.Context
+	store := c.MustGet("store").(*services.Store)
+
+	doc := store.GetDocFromStore(FileRequest.FileId)
+	if doc != nil {
+		path := doc.GetPath()
+		log.Printf("Serving file: %v", path)
+		c.File(path)
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"message": "File not found",
 	})
 }

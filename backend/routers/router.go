@@ -31,8 +31,8 @@ func InitRouter() *gin.Engine {
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())
 
-	r.POST("/upload", v1.DownloadFile)
-	r.POST("/serve", v1.ServeFile)
+	r.POST("/upload", v1.UploadFile)
+	r.POST("/download", v1.DownloadFile)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
 	})
