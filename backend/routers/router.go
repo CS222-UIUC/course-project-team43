@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gin-contrib/zap"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
@@ -44,6 +44,7 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/upload", v1.UploadFile)
 	r.POST("/download", v1.DownloadFile)
+	r.GET("/download/:fileID", v1.DirectDownloadFile)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "Health Check!"})
 	})

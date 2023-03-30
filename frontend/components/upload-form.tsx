@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import API from "@/lib/api"
+import API, { API_URL } from "@/lib/api"
 import type { UploadReponse } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 
@@ -60,7 +60,15 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && <div>{fileId}</div>}
+      {fileId !== "" && (
+        <div className="mt-4">
+          File uploaded successfully. <br />
+          ID:{" "}
+          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500">
+            {fileId}
+          </a>
+        </div>
+      )}
     </div>
   )
 }

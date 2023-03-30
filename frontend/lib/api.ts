@@ -10,13 +10,20 @@ export default class API {
         return await this.post('upload', body);
     }
     static async download(id: string): Promise<APIResponse<Blob>> {
-        let res = await this.rawPost('download', { file_id: id });
-        const responseObject: APIResponse<Blob> = {
+        let res = await this.rawPost('download', JSON.stringify({ file_id: id }));
+        if (res.ok) {
+            const responseObject: APIResponse<Blob> = {
+                status: res.status,
+                response: await res.blob(),
+                message: '',
+            };
+            return responseObject;
+        }
+        throw new APIError({
             status: res.status,
-            response: await res.blob(),
-            message: '',
-        };
-        return responseObject;
+            response: await res.json(),
+            message: 'Unknown error',
+        });
     }
     static async rawGet(path: string): Promise<Response> {
         const response = await fetch(`${API_URL}/${path}`);
