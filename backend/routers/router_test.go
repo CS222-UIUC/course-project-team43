@@ -43,7 +43,7 @@ func TestApp(t *testing.T) {
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
-	var res v1.DownloadResponse
+	var res v1.UploadResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &res)
 	assert.NoError(t, err, "Download response should deserialize")
 	assert.NotEqual(t, "", res.FileId, "Should have non-empty file ID")
@@ -61,7 +61,7 @@ func TestApp(t *testing.T) {
 	}
 
 	rec = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/serve", bytes.NewBuffer(fileReqBody))
+	req, _ = http.NewRequest("POST", "/download", bytes.NewBuffer(fileReqBody))
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)

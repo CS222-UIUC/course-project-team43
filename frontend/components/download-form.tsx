@@ -10,10 +10,9 @@ const DownloadForm = (): JSX.Element => {
   const onDownloadSubmit = async (_: any): Promise<void> => {
     if (filename !== "") {
       try {
-        await API.rawPost("serve", JSON.stringify({ file_id: filename }))
+        await API.rawPost("download", JSON.stringify({ file_id: filename }))
           .then(async (response: any) => response.blob())
           .then((blob) => {
-            // TODO: Cleanup this logic.
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement("a")
             a.href = url
