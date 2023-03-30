@@ -21,30 +21,34 @@ func init() {
 	setting.Setup("../conf/app.ini")
 }
 
-func TestApp(t *testing.T) {
-	router := InitRouter()
-	contents := []byte("hello world")
-
+func CreateMultiPartFormFile(t *testing.T, file io.Reader, filename string, contents []byte) (io.Reader, string) {
 	var b bytes.Buffer
-	var fw io.Writer
-	var err error
 	w := multipart.NewWriter(&b)
-	if fw, err = w.CreateFormFile("file", "test.txt"); err != nil {
+	fw, err := w.CreateFormFile("file", filename)
+	if err != nil {
 		t.Fatalf("Failed to create file in multipart: %v", err)
 	}
 	if _, err := fw.Write(contents); err != nil {
 		t.Fatalf("Failed to write contents to writer: %v", err)
 	}
 	w.Close()
+	return &b, w.FormDataContentType()
+}
+
+func TestApp(t *testing.T) {
+	router := InitRouter()
+	contents := []byte("hello world")
+
+	content, contentType := CreateMultiPartFormFile(t, nil, "/arbitrary/path/test.txt", contents)
 
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/upload", &b)
-	req.Header.Set("Content-Type", w.FormDataContentType())
+	req, _ := http.NewRequest("POST", "/upload", content)
+	req.Header.Set("Content-Type", contentType)
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	var res v1.DownloadResponse
-	err = json.Unmarshal(rec.Body.Bytes(), &res)
+	err := json.Unmarshal(rec.Body.Bytes(), &res)
 	assert.NoError(t, err, "Download response should deserialize")
 	assert.NotEqual(t, "", res.FileId, "Should have non-empty file ID")
 	assert.True(t, res.Expiration.After(time.Now()), "Expiration should be in future")
@@ -53,6 +57,48 @@ func TestApp(t *testing.T) {
 	actual, err := os.ReadFile(fp)
 	assert.NoError(t, err, "File should exist on system")
 	assert.Equal(t, contents, actual, "Contents on system should match")
+
+	fileReq := v1.FileRequest{FileId: res.FileId}
+	var fileReqBody []byte
+	if fileReqBody, err = json.Marshal(fileReq); err != nil {
+		t.Fatalf("Failed to serialize file request: %v", err)
+	}
+
+	rec = httptest.NewRecorder()
+	req, _ = http.NewRequest("POST", "/serve", bytes.NewBuffer(fileReqBody))
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, contents, rec.Body.Bytes(), "File contents should match")
+}
+
+func TestMissingFileUpload(t *testing.T) {
+	router := InitRouter()
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/upload", nil)
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusBadRequest, rec.Code, "Request should fail")
+}
+
+func TestFileNameNoExtUpload(t *testing.T) {
+	router := InitRouter()
+
+	contents := []byte("hello world")
+	content, contentType := CreateMultiPartFormFile(t, nil, "test", contents)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/upload", content)
+	req.Header.Set("Content-Type", contentType)
+	router.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	var res v1.DownloadResponse
+	err := json.Unmarshal(rec.Body.Bytes(), &res)
+	assert.NoError(t, err, "Download response should deserialize")
+	assert.NotEqual(t, "", res.FileId, "Should have non-empty file ID")
 
 	fileReq := v1.FileRequest{FileId: res.FileId}
 	var fileReqBody []byte
