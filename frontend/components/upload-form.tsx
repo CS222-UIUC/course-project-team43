@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 
 import * as API from "@/lib/api"
-import type { UploadReponse } from "@/lib/types"
+import type { UploadResponse } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 
 // Form for uploading files to the backend
@@ -26,7 +26,7 @@ const UploadForm = (): JSX.Element => {
     const formData = new FormData()
     formData.append("file", uploadFile)
     try {
-      const res = await API.actions.upload<UploadReponse>(formData)
+      const res = await API.actions.upload<UploadResponse>(formData)
       console.log(res)
       setFileId(res.response.file_id)
     } catch (err) {
@@ -52,7 +52,7 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && <div>{fileId}</div>}
+      {fileId !== "" && <div data-testid="file_id">{fileId}</div>}
     </div>
   )
 }
