@@ -31,7 +31,6 @@ func UploadFile(c *gin.Context) {
 	expiry := c.PostForm("expiration")
 	// convert expiration to time.Time, if "" then zero time
 	expirationTime := time.Time{}
-	println(expiry)
 	if expiry != "" {
 		// epxiration time is in milliseconds since epoch
 		var asInteger, err = strconv.ParseInt(expiry, 10, 64)

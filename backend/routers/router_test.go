@@ -30,7 +30,10 @@ func TestApp(t *testing.T) {
 	var fw io.Writer
 	var err error
 	w := multipart.NewWriter(&b)
-	w.WriteField("expiration", strconv.FormatInt(time.Now().Add(time.Minute).UnixMilli(), 10))
+	err = w.WriteField("expiration", strconv.FormatInt(time.Now().Add(time.Minute).UnixMilli(), 10))
+	if err != nil {
+		t.Fatalf("Failed to write expiration to multipart: %v", err)
+	}
 	if fw, err = w.CreateFormFile("file", "test.txt"); err != nil {
 		t.Fatalf("Failed to create file in multipart: %v", err)
 	}
