@@ -9,6 +9,7 @@ const UploadForm = (): JSX.Element => {
   const [uploadFile, setUploadFile] = useState<any>()
   const [fileId, setFileId] = useState<string>("")
   const [filename, setFilename] = useState<string>("")
+  const [expiry, setExpiry] = useState<string>("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -21,10 +22,17 @@ const UploadForm = (): JSX.Element => {
     setUploadFile(file)
   }
 
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    // Convert to Unix timestamp
+    let date = new Date(e.target.value)
+    setExpiry(date.getTime().toString())
+  }
+
   const onUploadSubmit = async (event: any): Promise<void> => {
     event.preventDefault()
     const formData = new FormData()
     formData.append("file", uploadFile)
+    formData.append("expiration", expiry)
     try {
       const res = await API.upload(formData)
       setFileId(res.response.file_id)
@@ -51,7 +59,7 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">
           Select expiry time
         </span>
-        <Input type="datetime-local" id="file-expiry" />
+        <Input type="datetime-local" onChange={handleExpiryChange} id="file-expiry" />
       </label>
       <label
         htmlFor="file-submit"

@@ -4,6 +4,7 @@ package v1
 import (
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,8 @@ import (
 )
 
 type UploadResponse struct {
-	Expiration time.Time `json:"expiration"`
-	FileId     string    `json:"file_id"`
+	Expiration int64  `json:"expiration"`
+	FileId     string `json:"file_id"`
 }
 
 func UploadFile(c *gin.Context) {
@@ -30,14 +31,18 @@ func UploadFile(c *gin.Context) {
 	expiry := c.PostForm("expiration")
 	// convert expiration to time.Time, if "" then zero time
 	expirationTime := time.Time{}
+	println(expiry)
 	if expiry != "" {
-		expirationTime, err = time.Parse(time.RFC3339, expiry)
+		// epxiration time is in milliseconds since epoch
+		var asInteger, err = strconv.ParseInt(expiry, 10, 64)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"message": "Invalid expiration time",
 			})
 			return
 		}
+		expirationTime = time.UnixMilli(asInteger)
+
 	}
 
 	extension := filepath.Ext(file.Filename)
@@ -62,7 +67,7 @@ func UploadFile(c *gin.Context) {
 
 	// File saved succesfully
 	c.JSON(http.StatusOK, UploadResponse{
-		Expiration: expirationTime,
+		Expiration: expirationTime.UnixMilli(),
 		FileId:     fileId,
 	})
 }
