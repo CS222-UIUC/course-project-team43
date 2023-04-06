@@ -15,7 +15,7 @@ func init() {
 }
 
 func TestStore(t *testing.T) {
-	doc := models.NewDocument("test1", ".txt", time.Now().Add(time.Minute))
+	doc := models.NewDocument("test1", "test1", ".txt", time.Now().Add(time.Minute))
 	if _, err := os.Create(doc.GetPath()); err != nil {
 		t.Fatalf("Error creating file: %v", err)
 	}
