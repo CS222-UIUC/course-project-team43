@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -24,8 +25,11 @@ func init() {
 func CreateMultiPartFormFile(t *testing.T, file io.Reader, filename string, contents []byte) (io.Reader, string) {
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
-	fw, err := w.CreateFormFile("file", filename)
+	err = w.WriteField("expiration", strconv.FormatInt(time.Now().Add(time.Minute).UnixMilli(), 10))
 	if err != nil {
+		t.Fatalf("Failed to write expiration to multipart: %v", err)
+	}
+	if fw, err = w.CreateFormFile("file", "test.txt"); err != nil {
 		t.Fatalf("Failed to create file in multipart: %v", err)
 	}
 	if _, err := fw.Write(contents); err != nil {
@@ -47,11 +51,11 @@ func TestApp(t *testing.T) {
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
-	var res v1.DownloadResponse
-	err := json.Unmarshal(rec.Body.Bytes(), &res)
+	var res v1.UploadResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &res)
 	assert.NoError(t, err, "Download response should deserialize")
 	assert.NotEqual(t, "", res.FileId, "Should have non-empty file ID")
-	assert.True(t, res.Expiration.After(time.Now()), "Expiration should be in future")
+	assert.True(t, time.UnixMilli(res.Expiration).After(time.Now()), "Expiration should be in future")
 
 	fp := filepath.Join(setting.ServerSetting.DownloadPath, res.FileId+".txt")
 	actual, err := os.ReadFile(fp)
@@ -65,7 +69,7 @@ func TestApp(t *testing.T) {
 	}
 
 	rec = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/serve", bytes.NewBuffer(fileReqBody))
+	req, _ = http.NewRequest("POST", "/download", bytes.NewBuffer(fileReqBody))
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)

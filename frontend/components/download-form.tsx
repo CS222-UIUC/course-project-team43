@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 
-import * as API from "@/lib/api"
+import API from "@/lib/api"
 import { Input } from "@/components/ui/input"
 
 // Form for uploading files to the backend
@@ -10,19 +10,15 @@ const DownloadForm = (): JSX.Element => {
   const onDownloadSubmit = async (_: any): Promise<void> => {
     if (filename !== "") {
       try {
-        await API.rawPost("serve", JSON.stringify({ file_id: filename }))
-          .then(async (response: any) => response.blob())
-          .then((blob) => {
-            // TODO: Cleanup this logic.
-            const url = window.URL.createObjectURL(blob)
-            const a = document.createElement("a")
-            a.href = url
-            a.download = `${filename}.txt`
-            document.body.appendChild(a)
-            a.click()
-            a.remove()
-            window.URL.revokeObjectURL(url)
-          })
+        let res = await API.download(filename);
+        const url = window.URL.createObjectURL(res.response); // res.response is a blob
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `${filename}.txt`
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        window.URL.revokeObjectURL(url)
       } catch (err) {
         console.log(err)
       }
