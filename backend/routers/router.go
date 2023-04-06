@@ -2,14 +2,14 @@
 package routers
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"time"
-	"encoding/json"
 
 	"github.com/gin-contrib/zap"
-	"go.uber.org/zap"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"QuickShare/pkg/setting"
 	v1 "QuickShare/routers/v1"
