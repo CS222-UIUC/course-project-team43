@@ -43,11 +43,11 @@ func InitRouter() *gin.Engine {
 			panic(err)
 		}
 		// Build the HTTP logger
-		logger := zap.Must(zapConf.Build()) 
+		logger := zap.Must(zapConf.Build())
 
-		zap.ReplaceGlobals(logger) // zap.S().<Log Type> can now be used in place of log
-	 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
-	 	r.Use(ginzap.RecoveryWithZap(logger, true)) // Set the Gin recovery logger to Zap
+		zap.ReplaceGlobals(logger)                       // zap.S().<Log Type> can now be used in place of log
+		r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
+		r.Use(ginzap.RecoveryWithZap(logger, true))      // Set the Gin recovery logger to Zap
 	}
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())

@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"go.uber.org/zap"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"QuickShare/models"
 )
@@ -93,11 +93,11 @@ func (s *Store) removeFile(fileId string) {
 	}
 }
 
-func (s *Store) calculateDiscUtilization() (total int64)  {
+func (s *Store) calculateDiscUtilization() (total int64) {
 	for _, doc := range s.documents {
-		fileInfo, err := os.Stat(doc.GetPath());
+		fileInfo, err := os.Stat(doc.GetPath())
 		if err == nil {
-			total += fileInfo.Size();
+			total += fileInfo.Size()
 		}
 	}
 	return total
