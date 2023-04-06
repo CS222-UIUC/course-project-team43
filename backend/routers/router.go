@@ -2,16 +2,10 @@
 package routers
 
 import (
-	"encoding/json"
 	"net/http"
-	"os"
-	"time"
 
-	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"QuickShare/pkg/setting"
 	v1 "QuickShare/routers/v1"
 	"QuickShare/services"
 )
@@ -49,6 +43,7 @@ func InitRouter() *gin.Engine {
 	 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
 	 	r.Use(ginzap.RecoveryWithZap(logger, true)) // Set the Gin recovery logger to Zap
 	}
+
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())
 
