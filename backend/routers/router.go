@@ -21,6 +21,7 @@ func InitRouter() *gin.Engine {
 
 	zapConfFile, _ := os.Open(setting.ServerSetting.ZapConfPath)
 	defer zapConfFile.Close()
+	// Reading in the zap configuration file
 	data := make([]byte, 0)
 	buffer := make([]byte, 1024)
 	for {
@@ -30,15 +31,18 @@ func InitRouter() *gin.Engine {
 		}
 		data = append(data, buffer[:n]...)
 	}
-
+	// Creating a zap configuration
 	var zapConf zap.Config
 	if err := json.Unmarshal(data, &zapConf); err != nil {
 		panic(err)
 	}
-	logger := zap.Must(zapConf.Build()) // Build the logger
+	// Build the HTTP logger
+	logger := zap.Must(zapConf.Build()) 
 
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-	r.Use(ginzap.RecoveryWithZap(logger, true))
+	zap.ReplaceGlobals(logger) // zap.S().<Log Type> can now be used in place of log
+
+	r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
+	r.Use(ginzap.RecoveryWithZap(logger, true)) // Set the Gin recovery logger to Zap
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())
 

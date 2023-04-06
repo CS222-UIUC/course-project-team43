@@ -41,7 +41,6 @@ func UploadFile(c *gin.Context) {
 			return
 		}
 		expirationTime = time.UnixMilli(asInteger)
-
 	}
 
 	extension := filepath.Ext(file.Filename)
