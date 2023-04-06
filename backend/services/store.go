@@ -45,7 +45,7 @@ func (s *Store) sweep(currTime time.Time) {
 	var removedFiles []string
 
 	for path, doc := range s.documents {
-		if currTime.After(doc.ExpirationTime) {
+		if currTime.After(doc.ExpirationTime) && !doc.ExpirationTime.IsZero() {
 			s.removeFile(path)
 			removedFiles = append(removedFiles, path)
 		}

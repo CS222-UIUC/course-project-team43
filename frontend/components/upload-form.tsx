@@ -1,7 +1,8 @@
 import React, { useState } from "react"
 
-import * as API from "@/lib/api"
-import type { UploadResponse } from "@/lib/types"
+import API, { API_URL } from "@/lib/api"
+import type { UploadReponse } from "@/lib/types"
+
 import { Input } from "@/components/ui/input"
 
 // Form for uploading files to the backend
@@ -9,6 +10,7 @@ const UploadForm = (): JSX.Element => {
   const [uploadFile, setUploadFile] = useState<any>()
   const [fileId, setFileId] = useState<string>("")
   const [filename, setFilename] = useState<string>("")
+  const [expiry, setExpiry] = useState<string>("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -21,13 +23,19 @@ const UploadForm = (): JSX.Element => {
     setUploadFile(file)
   }
 
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    // Convert to Unix timestamp
+    let date = new Date(e.target.value)
+    setExpiry(date.getTime().toString())
+  }
+
   const onUploadSubmit = async (event: any): Promise<void> => {
     event.preventDefault()
     const formData = new FormData()
     formData.append("file", uploadFile)
+    formData.append("expiration", expiry)
     try {
-      const res = await API.actions.upload<UploadResponse>(formData)
-      console.log(res)
+      const res = await API.upload(formData)
       setFileId(res.response.file_id)
     } catch (err) {
       console.error(err)
@@ -46,13 +54,30 @@ const UploadForm = (): JSX.Element => {
         <Input type="file" onChange={handleFileChange} id="file-upload" />
       </label>
       <label
+        htmlFor="file-expiry"
+        className="text-sm text-gray-600 dark:text-gray-400"
+      >
+        <span className="mt-2 mb-2 text-base leading-normal">
+          Select expiry time
+        </span>
+        <Input type="datetime-local" onChange={handleExpiryChange} id="file-expiry" />
+      </label>
+      <label
         htmlFor="file-submit"
         className="text-sm text-gray-600 dark:text-gray-400"
       >
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && <div data-testid="file_id">{fileId}</div>}
+      {fileId !== "" && (
+        <div className="mt-4">
+          File uploaded successfully. <br />
+          ID:{" "}
+          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
+            {fileId}
+          </a>
+        </div>
+      )}
     </div>
   )
 }
