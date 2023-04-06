@@ -2,6 +2,7 @@ import React, { useState } from "react"
 
 import API, { API_URL } from "@/lib/api"
 import type { UploadReponse } from "@/lib/types"
+
 import { Input } from "@/components/ui/input"
 
 // Form for uploading files to the backend
@@ -72,7 +73,7 @@ const UploadForm = (): JSX.Element => {
         <div className="mt-4">
           File uploaded successfully. <br />
           ID:{" "}
-          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500">
+          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
             {fileId}
           </a>
         </div>
