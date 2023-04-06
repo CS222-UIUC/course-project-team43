@@ -112,7 +112,7 @@ func TestFileNameNoExtUpload(t *testing.T) {
 	}
 
 	rec = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/serve", bytes.NewBuffer(fileReqBody))
+	req, _ = http.NewRequest("POST", "/download", bytes.NewBuffer(fileReqBody))
 	router.ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Code)
