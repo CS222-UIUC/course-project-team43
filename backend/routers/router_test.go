@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	setting.Setup("../conf/app.ini")
+	setting.Setup("../conf/debug.ini")
 }
 
 func TestApp(t *testing.T) {

@@ -19,30 +19,36 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	zapConfFile, _ := os.Open(setting.ServerSetting.ZapConfPath)
-	defer zapConfFile.Close()
-	// Reading in the zap configuration file
-	data := make([]byte, 0)
-	buffer := make([]byte, 1024)
-	for {
-		n, err := zapConfFile.Read(buffer)
-		if n == 0 || err != nil {
-			break
+	if setting.ServerSetting.RunMode == "debug" {
+		// Tests are running, use default logger
+		r.Use(gin.Logger())
+		r.Use(gin.Recovery())
+	} else {
+		// Production logger
+		zapConfFile, _ := os.Open(setting.ServerSetting.ZapConfPath)
+		defer zapConfFile.Close()
+		// Reading in the zap configuration file
+		data := make([]byte, 0)
+		buffer := make([]byte, 1024)
+		for {
+			n, err := zapConfFile.Read(buffer)
+			if n == 0 || err != nil {
+				break
+			}
+			data = append(data, buffer[:n]...)
 		}
-		data = append(data, buffer[:n]...)
-	}
-	// Creating a zap configuration
-	var zapConf zap.Config
-	if err := json.Unmarshal(data, &zapConf); err != nil {
-		panic(err)
-	}
-	// Build the HTTP logger
-	logger := zap.Must(zapConf.Build()) 
+		// Creating a zap configuration
+		var zapConf zap.Config
+		if err := json.Unmarshal(data, &zapConf); err != nil {
+			panic(err)
+		}
+		// Build the HTTP logger
+		logger := zap.Must(zapConf.Build()) 
 
-	zap.ReplaceGlobals(logger) // zap.S().<Log Type> can now be used in place of log
-
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
-	r.Use(ginzap.RecoveryWithZap(logger, true)) // Set the Gin recovery logger to Zap
+		zap.ReplaceGlobals(logger) // zap.S().<Log Type> can now be used in place of log
+	 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true)) // Set the Gin logger to Zap
+	 	r.Use(ginzap.RecoveryWithZap(logger, true)) // Set the Gin recovery logger to Zap
+	}
 	r.Use(services.AddToGinContext)
 	r.Use(CORSMiddleware())
 
