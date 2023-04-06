@@ -1,9 +1,11 @@
 import React, { useState } from "react"
 
 import API, { API_URL } from "@/lib/api"
-import type { UploadReponse } from "@/lib/types"
+import type { UploadResponse } from "@/lib/types"
+import CheckSum from "@/lib/checksum"
 
 import { Input } from "@/components/ui/input"
+import { Progress } from "@/components/ui/progress"
 
 // Form for uploading files to the backend
 const UploadForm = (): JSX.Element => {
@@ -11,6 +13,9 @@ const UploadForm = (): JSX.Element => {
   const [fileId, setFileId] = useState<string>("")
   const [filename, setFilename] = useState<string>("")
   const [expiry, setExpiry] = useState<string>("")
+
+  const [fileHash, setHash] = useState<string>("")
+  const [uploadProgress, setProgress] = useState<number>(0)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -30,6 +35,12 @@ const UploadForm = (): JSX.Element => {
   }
 
   const onUploadSubmit = async (event: any): Promise<void> => {
+    debugger;
+    await CheckSum(uploadFile, setProgress, setHash)
+    // const hash = 
+    // setHash(hash)
+    // console.log(hash)
+
     event.preventDefault()
     const formData = new FormData()
     formData.append("file", uploadFile)
@@ -69,15 +80,20 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && (
+      {fileId !== "" ? (
         <div className="mt-4">
           File uploaded successfully. <br />
           ID:{" "}
           <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
-            {fileId}
-          </a>
+            {fileId} 
+          </a>  <br />
+          Hash: {fileHash}
         </div>
-      )}
+      ) :
+        <div className="mt-4">
+          Loading...
+          <Progress value={uploadProgress}/>
+        </div>}
     </div>
   )
 }
