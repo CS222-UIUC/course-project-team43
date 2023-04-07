@@ -5,6 +5,7 @@ import type { UploadResponse } from "@/lib/types"
 import CheckSum from "@/lib/checksum"
 
 import { Input } from "@/components/ui/input"
+import CopyButton from "@/components/copy-button"
 
 // Form for uploading files to the backend
 const UploadForm = (): JSX.Element => {
@@ -78,11 +79,11 @@ const UploadForm = (): JSX.Element => {
       {fileId !== "" && (
         <div className="mt-4">
           File uploaded successfully. <br />
-          ID:{" "}
+          ID:{" "}  
           <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
             {fileId} 
-          </a>  <br />
-          Hash: {fileHash}
+          </a> <CopyButton fileInfo={fileId}/>  <br /> 
+          Hash: {fileHash} <CopyButton fileInfo={fileHash}/>
         </div>
       )}
     </div>
