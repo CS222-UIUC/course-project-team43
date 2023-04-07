@@ -20,10 +20,10 @@ type Document struct {
 // NewDocument creates a document object given the path of the file that
 // has already been downloaded and the time this file should exist on the
 // server.
-func NewDocument(fileId string, fileName string, extension string, expirationTime time.Time) *Document {
+func NewDocument(fileId, fsFileName, extension string, expirationTime time.Time) *Document {
 	return &Document{
 		FileId:         fileId,
-		FileName:       fileName,
+		FileName:       fsFileName,
 		Extension:      extension,
 		ExpirationTime: expirationTime,
 	}
