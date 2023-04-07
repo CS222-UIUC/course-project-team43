@@ -1,33 +1,7 @@
 import CryptoJS from 'crypto-js'
 
-var lastOffset: number = 0
-
-// interface
-
-// function callbackOnRead(state : any) {
-//     debugger
-//     if (lastOffset === state.offset) {
-//         lastOffset = state.offset + state.chunkSize
-//         state.onProgress(state.evt.target.result)
-
-//         if (state.offset + state.chunkSize >= state.file.size) {
-//             state.onFinish()
-//         }
-//     } else {
-//         let timeout = setTimeout(function () {
-
-//         }, 10)
-//     }
-
-
-
-
-    
-// }
-
 // onProgress and onFinish are callback functions.
 function loading(file: File, onProgress: any, onFinish: any) {
-    debugger
     let chunkSize : number = 1024 * 1024 // 1 megabyte
     let offset : number = 0
     let partial : any
@@ -50,30 +24,22 @@ function loading(file: File, onProgress: any, onFinish: any) {
     }
 }
 
-export default async function CheckSum(file : File, updateProgress: any, setHash: any) {
-    debugger
+// setHash is a hook to update the fileHash field in upload-form
+export default async function CheckSum(file : File, setHash: any) {
     var SHA256 : any = CryptoJS.algo.SHA256.create();
-    var counter : number = 0
     var hash : string = ""
 
-    const onProgress = function(data: any) { // onProgress callback
+    const onProgress = function(data: any) {
         let wordBuffer = CryptoJS.lib.WordArray.create(data)
         SHA256.update(wordBuffer)
-        counter += data.byteLength
-
-        // Function to update the react front end state.
-        updateProgress(((counter / file.size) * 100).toFixed(0))
     }
 
-    const onFinish = function() { // onFinish callback
-        updateProgress(100)
+    const onFinish = function() {
         hash = SHA256.finalize().toString(CryptoJS.enc.Base64)
+        
+        // setState hook to update the react front-end
         setHash(hash)
     }
 
     loading(file, onProgress, onFinish)
-
-    // return new Promise<string>((resolve, reject) => {
-    //     resolve(hash)
-    // })
 }
