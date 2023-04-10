@@ -5,6 +5,7 @@ import type { UploadResponse } from "@/lib/types"
 import CheckSum from "@/lib/checksum"
 
 import { Input } from "@/components/ui/input"
+import { Progress } from "@/components/ui/progress"
 import CopyButton from "@/components/copy-button"
 
 // Form for uploading files to the backend
@@ -15,6 +16,7 @@ const UploadForm = (): JSX.Element => {
   const [expiry, setExpiry] = useState<string>("")
 
   const [fileHash, setHash] = useState<string>("")
+  const [hashProgress, setProgress] = useState<number>(0)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -34,8 +36,12 @@ const UploadForm = (): JSX.Element => {
   }
 
   const onUploadSubmit = async (event: any): Promise<void> => {
+    setFileId("")
+    setHash("")
+    setProgress(0)
+    
     // Calculate the hash of the file
-    await CheckSum(uploadFile, setHash)
+    CheckSum(uploadFile, setHash, setProgress)
 
     event.preventDefault()
     const formData = new FormData()
@@ -76,7 +82,7 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && (
+      {fileId !== "" && fileHash !== "" ? (
         <div className="mt-4">
           File uploaded successfully. <br />
           ID:{" "}  
@@ -85,7 +91,10 @@ const UploadForm = (): JSX.Element => {
           </a> <CopyButton fileInfo={fileId}/>  <br /> 
           Hash: {fileHash} <CopyButton fileInfo={fileHash}/>
         </div>
-      )}
+      ) : 
+      <div>
+        <br /> <Progress value={hashProgress}/>
+      </div>}
     </div>
   )
 }
