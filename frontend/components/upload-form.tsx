@@ -1,6 +1,13 @@
 import React, { useState } from "react"
 
 import API, { API_URL } from "@/lib/api"
+
+import type { UploadResponse } from "@/lib/types"
+import CheckSum from "@/lib/checksum"
+
+import { Input } from "@/components/ui/input"
+import { Progress } from "@/components/ui/progress"
+import CopyButton from "@/components/copy-button"
 import { cn } from "@/lib/utils"
 import { FileInput } from "@/components/drag-drop-file-input"
 import { Input } from "@/components/ui/input"
@@ -13,6 +20,9 @@ const UploadForm = (): JSX.Element => {
   const [filename, setFilename] = useState<string>("")
   const [expiry, setExpiry] = useState<string>("")
   const [expiryEnabled, setExpiryEnabled] = useState<boolean>(false)
+
+  const [fileHash, setHash] = useState<string>("")
+  const [hashProgress, setProgress] = useState<number>(0)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files === null || e.target.files.length !== 1) {
@@ -36,6 +46,13 @@ const UploadForm = (): JSX.Element => {
   }
 
   const onUploadSubmit = async (event: any): Promise<void> => {
+    setFileId("")
+    setHash("")
+    setProgress(0)
+    
+    // Calculate the hash of the file
+    CheckSum(uploadFile, setHash, setProgress)
+
     event.preventDefault()
     const formData = new FormData()
     formData.append("file", uploadFile)
@@ -91,19 +108,19 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && (
+      {fileId !== "" && fileHash !== "" ? (
         <div className="mt-4">
           File uploaded successfully. <br />
-          ID:{" "}
-          <a
-            href={`${API_URL}/download/${fileId}`}
-            className="text-blue-500"
-            data-testid="file_id"
-          >
-            {fileId}
-          </a>
+          ID:{" "}  
+          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
+            {fileId} 
+          </a> <CopyButton fileInfo={fileId}/>  <br /> 
+          Hash: {fileHash} <CopyButton fileInfo={fileHash}/>
         </div>
-      )}
+      ) : 
+      <div>
+        <br /> <Progress value={hashProgress}/>
+      </div>}
     </div>
   )
 }

@@ -2,11 +2,11 @@
  * Class that handles all API calls
  */
 
-import { UploadReponse } from "./types";
+import { UploadResponse } from "./types";
 
 export const API_URL = 'http://127.0.0.1:8000';
 export default class API {
-    static async upload(body: FormData): Promise<APIResponse<UploadReponse>> {
+    static async upload(body: FormData): Promise<APIResponse<UploadResponse>> {
         return await this.post('upload', body);
     }
     static async download(id: string): Promise<APIResponse<Blob>> {
