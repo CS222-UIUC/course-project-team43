@@ -1,17 +1,17 @@
 package services
 
 import (
-	"log"
 	"os"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"QuickShare/models"
 )
 
-const SweepInterval = time.Minute
+const SweepInterval = time.Second * 30
 
 // Store tracks information about the files that are currently
 // downloaded onto the server.
@@ -51,7 +51,9 @@ func (s *Store) sweep(currTime time.Time) {
 		}
 	}
 
-	log.Printf("Removed files: %v", removedFiles)
+	zap.S().Info("removedFiles:", removedFiles)
+	utilization := s.calculateDiscUtilization()
+	zap.S().Info("discUtilization:", utilization)
 }
 
 func (s *Store) AddToStore(doc *models.Document) {
@@ -64,10 +66,11 @@ func (s *Store) AddToStore(doc *models.Document) {
 }
 
 func (s *Store) PrintDocuments() {
-	log.Printf("Currently in Store: ")
+	var documents []string
 	for _, doc := range s.documents {
-		log.Printf("%v", doc)
+		documents = append(documents, doc.GetPath())
 	}
+	zap.S().Info("documents:", documents)
 }
 
 func (s *Store) GetDocFromStore(fileId string) *models.Document {
@@ -88,6 +91,16 @@ func (s *Store) removeFile(fileId string) {
 		os.Remove(doc.GetPath())
 		delete(s.documents, fileId)
 	}
+}
+
+func (s *Store) calculateDiscUtilization() (total int64) {
+	for _, doc := range s.documents {
+		fileInfo, err := os.Stat(doc.GetPath())
+		if err == nil {
+			total += fileInfo.Size()
+		}
+	}
+	return total
 }
 
 // Global Store

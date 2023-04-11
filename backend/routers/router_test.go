@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	setting.Setup("../conf/app.ini")
+	setting.Setup("../conf/debug.ini")
 }
 
 func CreateMultiPartFormFile(t *testing.T, file io.Reader, filename string, contents []byte) (io.Reader, string) {
