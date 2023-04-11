@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+	"mime/multipart"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -20,7 +21,7 @@ type UploadResponse struct {
 }
 
 func UploadFile(c *gin.Context) {
-	file, err := c.FormFile("file")
+	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "No file was received",
@@ -28,54 +29,27 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	expiry := c.PostForm("expiration")
-	// convert expiration to time.Time, if "" then zero time
-	expirationTime := time.Time{}
-	if expiry != "" {
-		// epxiration time is in milliseconds since epoch
-		var asInteger, err = strconv.ParseInt(expiry, 10, 64)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "Invalid expiration time",
-			})
-			return
-		}
-		expirationTime = time.UnixMilli(asInteger)
+	expiration, err := getExpiration(c)
+	if err != nil {
+		return
 	}
 
-	// Simulating saving file to store
-	// TODO: Move logic for downloading file
-	// into another method.
+	fileId := uuid.New().String()
+	fileName := getFileId(c)
+	if fileName == "" {
+		fileName = fileId
+	}
+
+	extension := filepath.Ext(fileHeader.Filename)
+	compress := shouldCompress(extension)
+
+	// Add to store
 	store := c.MustGet("store").(*services.Store)
 
-	extension := filepath.Ext(file.Filename)
-	fileName := uuid.New().String()
-	fileId := fileName
-	if customId := c.PostForm("custom_id"); customId != "" {
-		fileId = customId
-	}
-
-	if len(fileId) > 255 || len(fileId) < 4 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "File ID length is out of bounds",
-		})
-		return
-	}
-
-	if store.GetDocFromStore(fileId) != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "File with this ID exists",
-		})
-		return
-	}
-
-	// TODO: Using 10 minutes as default duration. This should be a value we
-	// receive in the frontend and access through the gin.Context.
-	doc := models.NewDocument(fileId, fileName, extension, expirationTime)
+	doc := models.NewDocument(fileId, fileName, extension, expiration, compress)
 	store.AddToStore(doc)
 
-	// Save the file
-	if err := c.SaveUploadedFile(file, doc.GetPath()); err != nil {
+	if err := handleWriting(c, fileHeader, doc); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to save the file",
 		})
@@ -84,7 +58,74 @@ func UploadFile(c *gin.Context) {
 
 	// File saved succesfully
 	c.JSON(http.StatusOK, UploadResponse{
-		Expiration: expirationTime.UnixMilli(),
+		Expiration: expiration.UnixMilli(),
 		FileId:     fileId,
 	})
+}
+
+func handleWriting(c *gin.Context, fileHeader *multipart.FileHeader, doc *models.Document) error {
+	if doc.Compressed {
+		return services.CompressAndWrite(fileHeader, doc.GetPath())
+	} else {
+		return c.SaveUploadedFile(fileHeader, doc.GetPath())
+	}
+}
+
+// Gets / validates the expiry 
+// If there is an error, this function handles 
+// writing the error message to the gin context
+func getExpiration(c *gin.Context) (time.Time, error) {
+	expiry := c.PostForm("expiration")
+
+	// convert expiration to time.Time, if "" then zero time
+	expirationTime := time.Time{}
+
+	if expiry != "" {
+		// epxiration time is in milliseconds since epoch
+		var asInteger, err = strconv.ParseInt(expiry, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"message": "Invalid expiration time",
+			})
+			return time.Time{}, err
+		}
+		expirationTime = time.UnixMilli(asInteger)
+	}
+
+	return expirationTime, nil
+}
+
+// Gets / validates the customId
+// If there is an error, this function handles
+// writing the error to the gin context.
+func getFileId(c *gin.Context) string {
+	fileId := c.PostForm("custom_id")
+
+	if fileId == "" {
+		// A fileId was not provided, so use the UUID
+		return ""
+	}
+
+	// A customId was provided, perform error checking
+	if len(fileId) > 255 || len(fileId) < 4 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "File ID length is out of bounds",
+		})
+		return ""
+	}
+
+	store := c.MustGet("store").(*services.Store)
+	if store.GetDocFromStore(fileId) != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "File with this ID exists",
+		})
+		return ""
+	}
+
+	return fileId
+}
+
+func shouldCompress(extension string) bool {
+	// This obviously is not comprehensive.
+	return extension == ".txt" || extension == ".pdf" || extension == ".cpp" || extension == ".h"
 }

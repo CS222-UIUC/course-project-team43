@@ -16,22 +16,7 @@ type FileRequest struct {
 	FileId string `json:"file_id"`
 }
 
-func HandleDownload(c *gin.Context, file FileRequest) {
-	// Obtain global store from gin.Context
-	store := c.MustGet("store").(*services.Store)
 
-	doc := store.GetDocFromStore(file.FileId)
-	if doc != nil {
-		path := doc.GetPath()
-		log.Printf("Serving file: %v", path)
-		c.File(path)
-		return
-	}
-
-	c.JSON(http.StatusBadRequest, gin.H{
-		"message": "File not found",
-	})
-}
 
 func DownloadFile(c *gin.Context) {
 	jsonFeed, readErr := io.ReadAll(c.Request.Body)
@@ -52,10 +37,31 @@ func DownloadFile(c *gin.Context) {
 		})
 		return
 	}
-	HandleDownload(c, FileRequest)
+	handleDownload(c, FileRequest)
 }
 
 func DirectDownloadFile(c *gin.Context) {
 	fileID := c.Param("fileID")
-	HandleDownload(c, FileRequest{FileId: fileID})
+	handleDownload(c, FileRequest{FileId: fileID})
+}
+
+func handleDownload(c *gin.Context, file FileRequest) {
+	// Obtain global store from gin.Context
+	store := c.MustGet("store").(*services.Store)
+
+	doc := store.GetDocFromStore(file.FileId)
+	if doc != nil {
+		path := doc.GetPath()
+		log.Printf("Serving file: %v", path)
+		if doc.Compressed {
+
+		} else {
+			c.File(path)
+		}
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"message": "File not found",
+	})
 }
