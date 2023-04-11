@@ -1,12 +1,17 @@
 import React, { useState } from "react"
 
 import API, { API_URL } from "@/lib/api"
+
 import type { UploadResponse } from "@/lib/types"
 import CheckSum from "@/lib/checksum"
 
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import CopyButton from "@/components/copy-button"
+import { cn } from "@/lib/utils"
+import { FileInput } from "@/components/drag-drop-file-input"
+import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
 
 // Form for uploading files to the backend
 const UploadForm = (): JSX.Element => {
@@ -14,6 +19,7 @@ const UploadForm = (): JSX.Element => {
   const [fileId, setFileId] = useState<string>("")
   const [filename, setFilename] = useState<string>("")
   const [expiry, setExpiry] = useState<string>("")
+  const [expiryEnabled, setExpiryEnabled] = useState<boolean>(false)
 
   const [fileHash, setHash] = useState<string>("")
   const [hashProgress, setProgress] = useState<number>(0)
@@ -35,6 +41,10 @@ const UploadForm = (): JSX.Element => {
     setExpiry(date.getTime().toString())
   }
 
+  const toggleExpiryEnabled = (): void => {
+    setExpiryEnabled(!expiryEnabled)
+  }
+
   const onUploadSubmit = async (event: any): Promise<void> => {
     setFileId("")
     setHash("")
@@ -46,7 +56,7 @@ const UploadForm = (): JSX.Element => {
     event.preventDefault()
     const formData = new FormData()
     formData.append("file", uploadFile)
-    formData.append("expiration", expiry)
+    formData.append("expiration", expiryEnabled ? expiry : "")
     try {
       const res = await API.upload(formData)
       setFileId(res.response.file_id)
@@ -62,18 +72,34 @@ const UploadForm = (): JSX.Element => {
         className="text-sm text-gray-600 dark:text-gray-400"
       >
         <span className="mt-2 mb-2 text-base leading-normal">
-          Select a file
+          Select or drop a file
         </span>
-        <Input type="file" onChange={handleFileChange} id="file-upload" />
+        <FileInput type="file" onChange={handleFileChange} id="file-upload" />
+      </label>
+      <label
+        htmlFor="enable-expiry"
+        className="text-sm text-gray-600 dark:text-gray-400 flex gap-2 items-center"
+      >
+        <span className="mt-2 mb-2 text-base leading-normal">
+          Enable file expiry
+        </span>
+        <Switch onCheckedChange={toggleExpiryEnabled} id="enable-expiry" />
       </label>
       <label
         htmlFor="file-expiry"
-        className="text-sm text-gray-600 dark:text-gray-400"
+        className={cn(
+          "text-sm text-gray-600 dark:text-gray-400",
+          expiryEnabled ? "" : "hidden"
+        )}
       >
         <span className="mt-2 mb-2 text-base leading-normal">
           Select expiry time
         </span>
-        <Input type="datetime-local" onChange={handleExpiryChange} id="file-expiry" />
+        <Input
+          type="datetime-local"
+          onChange={handleExpiryChange}
+          id="file-expiry"
+        />
       </label>
       <label
         htmlFor="file-submit"

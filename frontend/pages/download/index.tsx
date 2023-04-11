@@ -11,7 +11,7 @@ export default function DownloadPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="container grid items-center gap-6 pt-6 pb-8 md:py-10">
+      <section className="container grid items-center gap-6 pt-6 pb-8 md:py-10 max-w-4xl">
         <div className="flex max-w-[980px] flex-col items-start gap-2">
           <h1 className="text-3xl leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
             Download a file
