@@ -61,7 +61,7 @@ func (s *Store) AddToStore(doc *models.Document) {
 	defer s.mu.Unlock()
 
 	// Add link to the global links
-	s.documents[doc.FileId] = doc
+	s.documents[doc.FileHash] = doc
 	s.PrintDocuments()
 }
 

@@ -12,7 +12,6 @@ interface onCallBack {
 }
 
 function loadCallback(s: onCallBack, event: ProgressEvent<FileReader>) {
-    debugger
     if (lastOffset === s.offset) {
         lastOffset = s.offset + s.chunkSize
         s.onProgress(event.target.result)
@@ -60,8 +59,6 @@ export default async function CheckSum(file : File, setHash: any, setProgress: a
     let SHA256 : any = CryptoJS.algo.SHA256.create();
     let hash : string = ""
     let counter: number = 0
-
-    debugger
 
     const onProgress = function(data: any) {
         let wordBuffer = CryptoJS.lib.WordArray.create(data)

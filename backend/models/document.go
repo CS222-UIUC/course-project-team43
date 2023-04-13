@@ -11,7 +11,7 @@ import (
 // Document stores information about a file that was downloaded by the
 // server.
 type Document struct {
-	FileId         string    // The location of the file
+	FileHash         string    // The location of the file
 	FileName       string    // The name of the file (on the server)
 	Extension      string    // The extension of the file
 	ExpirationTime time.Time // When the file should be deleted from the server
@@ -20,9 +20,9 @@ type Document struct {
 // NewDocument creates a document object given the path of the file that
 // has already been downloaded and the time this file should exist on the
 // server.
-func NewDocument(fileId, fsFileName, extension string, expirationTime time.Time) *Document {
+func NewDocument(fileHash, fsFileName, extension string, expirationTime time.Time) *Document {
 	return &Document{
-		FileId:         fileId,
+		FileHash:       fileHash,
 		FileName:       fsFileName,
 		Extension:      extension,
 		ExpirationTime: expirationTime,

@@ -57,9 +57,9 @@ const UploadForm = (): JSX.Element => {
     const formData = new FormData()
     formData.append("file", uploadFile)
     formData.append("expiration", expiryEnabled ? expiry : "")
+    formData.append("hash", JSON.stringify({"FileHash": fileHash}))
     try {
-      const res = await API.upload(formData)
-      setFileId(res.response.file_id)
+      await API.upload(formData)
     } catch (err) {
       console.error(err)
     }
@@ -108,14 +108,13 @@ const UploadForm = (): JSX.Element => {
         <span className="mt-2 mb-2 text-base leading-normal">Upload</span>
         <Input type="submit" onClick={onUploadSubmit} id="file-submit" />
       </label>
-      {fileId !== "" && fileHash !== "" ? (
+      {fileHash !== "" ? (
         <div className="mt-4">
           File uploaded successfully. <br />
-          ID:{" "}  
-          <a href={`${API_URL}/download/${fileId}`} className="text-blue-500" data-testid="file_id">
-            {fileId} 
-          </a> <CopyButton fileInfo={fileId}/>  <br /> 
-          Hash: {fileHash} <CopyButton fileInfo={fileHash}/>
+          Hash:{" "}  
+          <a href={`${API_URL}/download/${fileHash}`} className="text-blue-500" data-testid="file_id">
+            {fileHash} 
+          </a> <CopyButton fileInfo={fileHash}/>
         </div>
       ) : 
       <div>

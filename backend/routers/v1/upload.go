@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 
 	"QuickShare/models"
 	"QuickShare/services"
@@ -16,7 +15,10 @@ import (
 
 type UploadResponse struct {
 	Expiration int64  `json:"expiration"`
-	FileId     string `json:"file_id"`
+}
+
+type UploadRequest struct {
+	FileHash string `json:"file_hash"`
 }
 
 func UploadFile(c *gin.Context) {
@@ -48,8 +50,10 @@ func UploadFile(c *gin.Context) {
 	// into another method.
 	store := c.MustGet("store").(*services.Store)
 
+	FileHash := c.PostForm("hash")
+	
 	extension := filepath.Ext(file.Filename)
-	fileName := uuid.New().String()
+	fileName := FileHash
 	fileId := fileName
 	if customId := c.PostForm("custom_id"); customId != "" {
 		fileId = customId
@@ -85,6 +89,5 @@ func UploadFile(c *gin.Context) {
 	// File saved succesfully
 	c.JSON(http.StatusOK, UploadResponse{
 		Expiration: expirationTime.UnixMilli(),
-		FileId:     fileId,
 	})
 }
