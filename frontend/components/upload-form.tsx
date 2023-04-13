@@ -5,7 +5,6 @@ import API, { API_URL } from "@/lib/api"
 import type { UploadResponse } from "@/lib/types"
 import CheckSum from "@/lib/checksum"
 
-import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import CopyButton from "@/components/copy-button"
 import { cn } from "@/lib/utils"
@@ -46,6 +45,7 @@ const UploadForm = (): JSX.Element => {
   }
 
   const onUploadSubmit = async (event: any): Promise<void> => {
+    // Resets the progress bar for another submit without page reload.
     setFileId("")
     setHash("")
     setProgress(0)
