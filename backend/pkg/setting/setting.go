@@ -14,6 +14,7 @@ type Server struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 	DownloadPath string
+	MaxFileSize  int64
 	ZapConfPath  string
 }
 
