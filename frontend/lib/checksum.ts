@@ -60,7 +60,7 @@ function loading(file: File, onProgress: any, onFinish: any) {
 export default async function CheckSum(file : File, setHash: any, setProgress: any) {
     var SHA256 : any = CryptoJS.algo.SHA256.create();
     var hash : string = ""
-    var counter: number = 0;
+    var counter: number = 0
 
     const onProgress = function(data: any) {
         let wordBuffer = CryptoJS.lib.WordArray.create(data)
@@ -78,5 +78,7 @@ export default async function CheckSum(file : File, setHash: any, setProgress: a
         setHash(hash)
     }
 
+    // Resets the lastOffset global variable to control callback order.
+    lastOffset = 0
     loading(file, onProgress, onFinish)
 }
