@@ -12,13 +12,11 @@ export default function IndexPage() {
     const uploadButton = document.getElementById("upload-button")! as HTMLButtonElement
     const downloadButton = document.getElementById("download-button")! as HTMLButtonElement
     if (isUpload) {
-      console.log("Upload")
       document.getElementById("upload-form")!.classList.remove("hidden")
       document.getElementById("download-form")!.classList.add("hidden")
       uploadButton.disabled = true
       downloadButton.disabled = false
     } else {
-      console.log("Download")
       document.getElementById("upload-form")!.classList.add("hidden")
       document.getElementById("download-form")!.classList.remove("hidden")
       downloadButton.disabled = true
@@ -33,7 +31,7 @@ export default function IndexPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <section className="container grid items-center gap-6 pt-6 pb-8 md:py-10">
-        <div className="flex max-w-[980px] gap-2 items-center justify-between">
+        <div className="flex w-full gap-2 items-center justify-between">
           <h1 className="text-3xl leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
             QuickShare
           </h1>

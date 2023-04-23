@@ -53,7 +53,6 @@ function loading(file: File, onProgress: any, onFinish: any) {
         reader.readAsArrayBuffer(partial)
         offset += chunkSize
     }
-    debugger
 }
 
 // setHash is a hook to update the fileHash field in upload-form
