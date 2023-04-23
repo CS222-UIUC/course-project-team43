@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"QuickShare/models"
+	"QuickShare/pkg/setting"
 	"QuickShare/services"
 )
 
@@ -24,6 +25,13 @@ func UploadFile(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "No file was received",
+		})
+		return
+	}
+
+	if file.Size > setting.ServerSetting.MaxFileSize {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "File is too large",
 		})
 		return
 	}
