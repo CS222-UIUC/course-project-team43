@@ -1,5 +1,8 @@
 # QuickShare
-QuickShare is a file-sharing platform that offers an intuitive and secure way to share files with others. With QuickShare, you can
+QuickShare is a file-sharing platform that offers an intuitive and secure way to share files with others. With QuickShare, you can:
+
+    - hello
+    - hello test
 
     - Share files anonymously: QuickShare does not require you to create an account, so you can share files without revealing your identity.
     - Share files securely with checksum verification: QuickShare uses SHA256 checksum verification to ensure that the files you share are not tampered with during transmission.
