@@ -15,7 +15,7 @@ type Document struct {
 	FileName       string    // The name of the file (on the server)
 	Extension      string    // The extension of the file
 	ExpirationTime time.Time // When the file should be deleted from the server
-	Compressed		 bool 		 // Indicates if the file has been compressed by the backend
+	Compressed     bool      // Indicates if the file has been compressed by the backend
 }
 
 // NewDocument creates a document object given the path of the file that
@@ -27,7 +27,7 @@ func NewDocument(fileId, fsFileName, extension string, expirationTime time.Time,
 		FileName:       fsFileName,
 		Extension:      extension,
 		ExpirationTime: expirationTime,
-		Compressed: 		compressed,
+		Compressed:     compressed,
 	}
 }
 

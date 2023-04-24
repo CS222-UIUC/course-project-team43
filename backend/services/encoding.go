@@ -1,11 +1,10 @@
 package services
 
 import (
-	"os"
-	"io"
-	"io/ioutil"
 	"compress/gzip"
+	"io"
 	"mime/multipart"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -13,9 +12,9 @@ import (
 	"QuickShare/models"
 )
 
-// CompressAndWrite takes HTTP form data, creates a new 
+// CompressAndWrite takes HTTP form data, creates a new
 // file on the disc with the given path, and writes the file
-// after compression with GZIP 
+// after compression with GZIP
 func CompressAndWrite(header *multipart.FileHeader, outputPath string) error {
 	zap.S().Info("Compressing")
 
@@ -63,10 +62,11 @@ func DecompressAndServe(c *gin.Context, document *models.Document) {
 	defer reader.Close()
 
 	// Create a temporary file for the decompressed data
-	tempFile, err := ioutil.TempFile("", "")
+	tempFile, err := os.CreateTemp("", document.FileId+"_"+document.Extension)
 	if err != nil {
 		return
 	}
+	defer os.Remove(tempFile.Name())
 	defer tempFile.Close()
 
 	// Write the decompressed data to the temporary file

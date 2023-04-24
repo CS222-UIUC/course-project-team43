@@ -177,3 +177,19 @@ func TestCustomId(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, rec.Code, "Request should fail")
 }
+
+func TestTooLargeFile(t *testing.T) {
+	router := InitRouter()
+
+	// upload very large file
+	contents := make([]byte, setting.ServerSetting.MaxFileSize+1)
+	content, contentType := CreateMultiPartFormFile(t, nil, "test.txt", "", contents)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/upload", content)
+	req.Header.Set("Content-Type", contentType)
+	router.ServeHTTP(rec, req)
+
+	// response should fail
+	assert.Equal(t, http.StatusBadRequest, rec.Code, "Request should fail")
+}

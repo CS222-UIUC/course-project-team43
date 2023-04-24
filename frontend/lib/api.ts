@@ -19,6 +19,14 @@ export default class API {
             };
             return responseObject;
         }
+        if (res.headers.get('Content-Type').includes('application/json')) {
+            const json = await res.json();
+            throw new APIError({
+                status: res.status,
+                response: json,
+                message: json.message != null ? json.message : 'Unknown error',
+            });
+        }
         throw new APIError({
             status: res.status,
             response: await res.json(),

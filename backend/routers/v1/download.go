@@ -16,8 +16,6 @@ type FileRequest struct {
 	FileId string `json:"file_id"`
 }
 
-
-
 func DownloadFile(c *gin.Context) {
 	jsonFeed, readErr := io.ReadAll(c.Request.Body)
 
@@ -54,7 +52,7 @@ func handleDownload(c *gin.Context, file FileRequest) {
 		path := doc.GetPath()
 		log.Printf("Serving file: %v", path)
 		if doc.Compressed {
-
+			services.DecompressAndServe(c, doc)
 		} else {
 			c.File(path)
 		}

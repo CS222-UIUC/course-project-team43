@@ -2,16 +2,17 @@
 package v1
 
 import (
+	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"time"
-	"mime/multipart"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
 	"QuickShare/models"
+	"QuickShare/pkg/setting"
 	"QuickShare/services"
 )
 
@@ -25,6 +26,13 @@ func UploadFile(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "No file was received",
+		})
+		return
+	}
+
+	if fileHeader.Size > setting.ServerSetting.MaxFileSize {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "File is too large",
 		})
 		return
 	}
@@ -71,8 +79,8 @@ func handleWriting(c *gin.Context, fileHeader *multipart.FileHeader, doc *models
 	}
 }
 
-// Gets / validates the expiry 
-// If there is an error, this function handles 
+// Gets / validates the expiry
+// If there is an error, this function handles
 // writing the error message to the gin context
 func getExpiration(c *gin.Context) (time.Time, error) {
 	expiry := c.PostForm("expiration")
