@@ -14,6 +14,12 @@ To use QuickShare, simply visit our website and drag and drop your files onto th
 At QuickShare, we take security seriously. We use encryption and security measures to protect your files from unauthorized access or tampering. We also ensure that all user data is stored securely, and we do not share user information with third parties.
 
 ## Contributing
+### Current Contributors:
+- **David Gieser**: Added frontend and backend testing, robust file hashing system, and backend download functionality.
+- **Mark Kraay**:  
+- **Amit Prasad**:
+- **Jake Mayer**: 
+
 If you'd like to contribute to QuickShare, we welcome pull requests! Check out our contributing guidelines to get started.
 
 ## License
