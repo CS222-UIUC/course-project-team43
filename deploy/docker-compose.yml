@@ -10,3 +10,5 @@ services:
     volumes:
       - "./config:/app/backend/conf"
       - "./data:/data"
+    environment:
+      - API_URL=http://localhost:8000
