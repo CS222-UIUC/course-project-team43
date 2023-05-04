@@ -10,6 +10,19 @@ QuickShare is a file-sharing platform that offers an intuitive and secure way to
 ## Getting Started
 To use QuickShare, simply visit our website and drag and drop your files onto the upload panel. You can then customize the sharing options, including the duration of time the file remains in the system, and whether or not you would like a custom url for your file.
 
+## Running locally
+1. Clone the repository
+2. In the repository root, run `docker build . -t quickshare`
+3. In the `deploy` directory, run `docker-compose up -d`
+
+You should change the `API_URL` environment variable in `deploy/docker-compose.yml` to the URL of your backend server. If you are running the backend locally, you should set this to `http://localhost:8000`. 
+
+For development, you may run the servers individiually by:
+```bash
+cd frontend && npm run dev
+cd backend && go run main.go
+```
+
 ## Security
 At QuickShare, we take security seriously. We use encryption and security measures to protect your files from unauthorized access or tampering. We also ensure that all user data is stored securely, and we do not share user information with third parties.
 
