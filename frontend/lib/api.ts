@@ -4,7 +4,7 @@
 
 import { UploadResponse } from "./types";
 
-export const API_URL = 'http://127.0.0.1:8000';
+export const API_URL = process.env.API_URL || 'http://127.0.0.1:8000';
 export default class API {
     static async upload(body: FormData): Promise<APIResponse<UploadResponse>> {
         return await this.post('upload', body);
