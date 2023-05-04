@@ -17,7 +17,7 @@ At QuickShare, we take security seriously. We use encryption and security measur
 ### Current Contributors:
 - **David Gieser**: Added frontend and backend testing, robust file hashing system, and backend download functionality.
 - **Mark Kraay**:  
-- **Amit Prasad**:
+- **Amit Prasad**: Frontend & Backend lint checks, Github Actions CI/CD, Frontend API glue, Majority of Frontend work, Dockerization of both frontend & backend.
 - **Jake Mayer**: 
 
 If you'd like to contribute to QuickShare, we welcome pull requests! Check out our contributing guidelines to get started.
