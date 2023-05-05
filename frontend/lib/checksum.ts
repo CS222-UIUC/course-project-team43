@@ -57,27 +57,54 @@ function loading(file: File, onProgress: any, onFinish: any) {
 
 // setHash is a hook to update the fileHash field in upload-form
 export default async function CheckSum(file : File, setHash: any, setProgress: any) {
-    var SHA256 : any = CryptoJS.algo.SHA256.create();
-    var hash : string = ""
-    var counter: number = 0
+    // var SHA256 : any = CryptoJS.algo.SHA256.create();
+    // var hash : string = ""
+    // var counter: number = 0
 
-    const onProgress = function(data: any) {
-        let wordBuffer = CryptoJS.lib.WordArray.create(data)
-        SHA256.update(wordBuffer)
+    // const onProgress = function(data: any) {
+    //     let wordBuffer = CryptoJS.lib.WordArray.create(data)
+    //     SHA256.update(wordBuffer)
         
-        // setState hook to update user on progress.
-        counter += data.byteLength
-        setProgress((( counter / file.size)*100).toFixed(0))
-    }
+    //     // setState hook to update user on progress.
+    //     counter += data.byteLength
+    //     setProgress((( counter / file.size)*100).toFixed(0))
+    // }
 
-    const onFinish = function() {
-        hash = SHA256.finalize().toString(CryptoJS.enc.Base64)
+    // const onFinish = function() {
+    //     hash = SHA256.finalize().toString(CryptoJS.enc.Base64)
         
-        // setState hook to update the react front-end.
-        setHash(hash)
-    }
+    //     // setState hook to update the react front-end.
+    //     setHash(hash)
+    // }
 
-    // Resets the lastOffset global variable to control callback order.
-    lastOffset = 0
-    loading(file, onProgress, onFinish)
+    // // Resets the lastOffset global variable to control callback order.
+    // lastOffset = 0
+    // console.log(hash)
+    // loading(file, onProgress, onFinish)
+
+    return new Promise((resolve, reject) => {
+        const SHA256 = CryptoJS.algo.SHA256.create();
+        let counter = 0;
+    
+        const onProgress = function (data) {
+            const wordBuffer = CryptoJS.lib.WordArray.create(data);
+            SHA256.update(wordBuffer);
+        
+            // setState hook to update user on progress.
+            counter += data.byteLength;
+            setProgress(((counter / file.size) * 100).toFixed(0));
+        };
+    
+        const onFinish = function () {
+            const hash = SHA256.finalize().toString(CryptoJS.enc.Base64);
+
+            // setState hook to update the react front-end.
+            setHash(hash);
+            resolve(hash);
+        };
+    
+        // Resets the lastOffset global variable to control callback order.
+        lastOffset = 0;
+        loading(file, onProgress, onFinish);
+      });
 }
