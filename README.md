@@ -29,7 +29,7 @@ At QuickShare, we take security seriously. We use encryption and security measur
 ## Contributing
 ### Current Contributors:
 - **David Gieser**: Added frontend and backend testing, robust file hashing system, and backend download functionality.
-- **Mark Kraay**:  
+- **Mark Kraay**:  Designed architecture of system, developed majority of Golang backend with Gin framework, optimized server metrics such as disc utilization by adding compression, added robust logging system with Uber's Zap.
 - **Amit Prasad**: Frontend & Backend lint checks, Github Actions CI/CD, Frontend API glue, Majority of Frontend work, Dockerization of both frontend & backend.
 - **Jake Mayer**: 
 
