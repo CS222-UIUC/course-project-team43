@@ -193,3 +193,36 @@ func TestTooLargeFile(t *testing.T) {
 	// response should fail
 	assert.Equal(t, http.StatusBadRequest, rec.Code, "Request should fail")
 }
+
+func TestSameFileUpload(t *testing.T) {
+	router := InitRouter()
+
+	// upload file
+	contents := []byte("hello world")
+	content, contentType := CreateMultiPartFormFile(t, nil, "test.txt", "", contents)
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/upload", content)
+	req.Header.Set("Content-Type", contentType)
+	router.ServeHTTP(rec, req)
+
+	// response should be ok
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	var res v1.UploadResponse
+	err := json.Unmarshal(rec.Body.Bytes(), &res)
+	assert.NoError(t, err, "Download response should deserialize")
+	assert.NotEqual(t, "", res.FileId, "Should have non-empty file ID")
+
+	// create same file again
+	content, contentType = CreateMultiPartFormFile(t, nil, "test.txt", "", contents)
+
+	// upload same file again
+	rec = httptest.NewRecorder()
+	req, _ = http.NewRequest("POST", "/upload", content)
+	req.Header.Set("Content-Type", contentType)
+	router.ServeHTTP(rec, req)
+
+	// response should be ok
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
